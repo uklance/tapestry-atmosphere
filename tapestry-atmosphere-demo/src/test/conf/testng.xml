@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="tapestry-cometd-demo Application Test Suite" annotations="1.5">
+    <test name="Unit Tests">
+        <packages>
+            <package name="org.lazan.t5.cometddemo"/>
+        </packages>
+    </test>
+</suite>

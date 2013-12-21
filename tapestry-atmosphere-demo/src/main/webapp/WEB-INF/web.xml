@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+        PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+	<display-name>Tapestry Atmosphere Demo</display-name>
+	<context-param>
+		<param-name>tapestry.app-package</param-name>
+		<param-value>org.lazan.t5.atmosphere.demo</param-value>
+	</context-param>
+	<context-param>
+		<param-name>tapestry.development-modules</param-name>
+		<param-value>org.lazan.t5.cometddemo.services.DevelopmentModule</param-value>
+	</context-param>
+	<context-param>
+		<param-name>tapestry.qa-modules</param-name>
+		<param-value>org.lazan.t5.cometddemo.services.QaModule</param-value>
+	</context-param>
+	<filter>
+		<filter-name>app</filter-name>
+		<filter-class>org.apache.tapestry5.TapestryFilter</filter-class>
+		<load-on-startup>0</load-on-startup>
+	</filter>
+	<filter-mapping>
+		<filter-name>app</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+    <servlet>
+        <servlet-name>atmosphere</servlet-name>
+        <servlet-class>org.atmosphere.cpr.AtmosphereServlet</servlet-class>
+        <init-param>
+            <param-name>org.atmosphere.cpr.packages</param-name>
+            <param-value>org.lazan.t5.atmosphere.services</param-value>
+        </init-param>
+        <init-param>
+        	<param-name>org.atmosphere.cpr.objectFactory</param-name>
+        	<param-value>org.lazan.t5.atmosphere.services.TapestryAtmosphereObjectFactory</param-value>
+        </init-param>
+        <async-supported>true</async-supported>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>atmosphere</servlet-name>
+        <url-pattern>/atmosphere/*</url-pattern>
+    </servlet-mapping>
+</web-app>
+      
