@@ -6,8 +6,13 @@ import org.atmosphere.cpr.BroadcasterFactory;
 import org.lazan.t5.atmosphere.services.AtmosphereManager;
 
 public class AtmosphereManagerImpl implements AtmosphereManager {
-	private BroadcasterFactory broadcasterFactory;
+	private final BroadcasterFactory broadcasterFactory;
 	
+	public AtmosphereManagerImpl(BroadcasterFactory broadcasterFactory) {
+		super();
+		this.broadcasterFactory = broadcasterFactory;
+	}
+
 	@Override
 	public void register(AtmosphereResource resource, String[] topics) {
 		for (String topic : topics) {
