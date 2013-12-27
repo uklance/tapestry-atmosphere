@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.tapestry5.BindingConstants;
+import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.ioc.annotations.Inject;
@@ -12,16 +13,18 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.ioc.internal.util.CollectionFactory;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
+import org.apache.tapestry5.services.ApplicationGlobals;
 import org.apache.tapestry5.services.BaseURLSource;
 import org.apache.tapestry5.services.Environment;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.lazan.t5.atmosphere.model.ContainerModel;
 import org.lazan.t5.atmosphere.model.PushTargetModel;
+import org.lazan.t5.atmosphere.services.PageGlobals;
 
 @Import(library = { "atmosphere.js", "tapestry-atmosphere.js", "tapestry-atmosphere.js" })
 public class Container {
 	@Parameter(name="options")
-	private JSONObject optionsParam;
+	private JSONObject options;
 	
 	@Parameter(defaultPrefix=BindingConstants.LITERAL, value="symbol:atmosphere.contentType")
 	private String contentType;
@@ -50,6 +53,12 @@ public class Container {
 	@Inject
 	private BaseURLSource baseUrlSource;
 	
+	@Inject
+	private PageGlobals pageGlobals;
+	
+	@Inject
+	private ApplicationGlobals applicationGlobals;
+
 	private List<PushTargetModel> pushTargets;
 	private Set<String> topics;
 	
@@ -66,33 +75,40 @@ public class Container {
 	
 	void afterRenderBody() {
 		if (!pushTargets.isEmpty()) {
-			JSONObject options = createOptions();
-			javascriptSupport.addInitializerCall("atmosphereContainer", options);
+			JSONObject config = createConfig();
+			javascriptSupport.addInitializerCall("atmosphereContainer", config);
 			environment.pop(ContainerModel.class);
 		}
 	}
 	
-	JSONObject createOptions() {
-		JSONObject options = optionsParam == null ? new JSONObject() : new JSONObject(optionsParam.toString());
-		
-		//String url = String.format("%s/%s/", baseUrlSource.getBaseURL(secure), uri);
-		String url = "http://localhost:8080/tapestry-atmosphere/atmosphere/";
-		options.put("url", url);
-		options.put("transport", transport);
+	JSONObject createConfig() {
+		JSONObject config = new JSONObject();
+		String baseUrl = baseUrlSource.getBaseURL(secure);
+		String contextPath = applicationGlobals.getServletContext().getContextPath();
+		String url = String.format("%s%s/%s/", baseUrl, contextPath, uri);
 
-		putIfNotNull(options, "contentType", contentType);
-		putIfNotNull(options, "logLevel", logLevel);
-		putIfNotNull(options, "fallbackTransport", fallbackTransport);
+		config.put("url", url);
+		config.put("transport", transport);
+		config.put("options", options);
+		
+		EventContext ac = pageGlobals.getPageActivationContext();
+		for (int i = 0; i < ac.getCount(); ++i) {
+			config.append("ac", ac.get(String.class, i));
+		}
+
+		putIfNotNull(config, "contentType", contentType);
+		putIfNotNull(config, "logLevel", logLevel);
+		putIfNotNull(config, "fallbackTransport", fallbackTransport);
 		
 		for (PushTargetModel pushTarget : pushTargets) {
 			JSONObject targetConfig = new JSONObject();
 			targetConfig.put("topics", new JSONArray(pushTarget.getTopics().toArray()));
 			targetConfig.put("id", pushTarget.getClientId());
 			
-			options.append("pushTargets", targetConfig);
+			config.append("pushTargets", targetConfig);
 		}
 		
-		return options;
+		return config;
 	}
 
 	void putIfNotNull(JSONObject json, String key, Object value) {

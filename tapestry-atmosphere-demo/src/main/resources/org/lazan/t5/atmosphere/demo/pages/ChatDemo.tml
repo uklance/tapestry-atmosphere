@@ -5,11 +5,13 @@
     <t:atmos.container>
     	topic1: <t:atmos.pushTarget
     		topics="topic1" 
+    		event="chat1"
     	/>
     	<br />
     	
     	topic2,topic3: <t:atmos.pushTarget
-    		topics="prop:['topic2','topic3']" 
+    		topics="prop:['topic2','topic3']"
+    		event="chat2" 
     	/>
     </t:atmos.container>
 </t:layout>

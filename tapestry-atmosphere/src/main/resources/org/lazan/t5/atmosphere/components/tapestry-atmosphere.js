@@ -42,18 +42,18 @@ T5.extendInitializers({
 		};
 
 		request.onMessage = function (response) {
-			var message = response.responseBody;
-			var bits = message.split(',');
-			var topic = bits[0];
-			var message = bits[1];
-			
+			var messageJson = response.responseBody;
+			// prototype specific
+			var message = messageJson.evalJSON();
+			var topic = message.topic;
+			var content = message.content;
 			var list = pushTargetsByTopic[topic];
-			console.log("Message received=" + message + ", list=" + list);
+			console.log("Message received=" + messageJson + ", listSize=" + list.length);
 			if (list) {
 				for (var i=0; i < list.length; ++i) {
 					var pushTarget = list[i];
 					console.log("Updating=" + pushTarget.id);
-					document.getElementById(pushTarget.id).innerHTML = message;
+					document.getElementById(pushTarget.id).innerHTML = content;
 				}
 			}
 		};
