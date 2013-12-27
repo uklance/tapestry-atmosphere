@@ -6,34 +6,46 @@ import javax.servlet.ServletContext;
 
 import org.apache.tapestry5.TapestryFilter;
 import org.apache.tapestry5.ioc.Registry;
+import org.apache.tapestry5.json.JSONObject;
 import org.atmosphere.config.service.AtmosphereHandlerService;
+import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.AtmosphereHandler;
 import org.atmosphere.cpr.AtmosphereRequest;
 import org.atmosphere.cpr.AtmosphereResource;
 import org.atmosphere.cpr.AtmosphereResourceEvent;
+import org.atmosphere.cpr.AtmosphereResourceFactory;
 import org.atmosphere.cpr.AtmosphereResponse;
 import org.lazan.t5.atmosphere.services.AtmosphereManager;
 
 @AtmosphereHandlerService
 public class AtmosphereHandlerImpl implements AtmosphereHandler {
+	private Registry registry;
+	
 	@Override
 	public void destroy() {
 	}
 
 	@Override
 	public void onRequest(AtmosphereResource resource) throws IOException {
-		resource.suspend();
-
 		AtmosphereRequest request = resource.getRequest();
-		String topicsCsv = request.getParameter("topics");
-		if (topicsCsv != null) {
-			topicsCsv = topicsCsv.replaceAll("%2C", ",");
+		String method = request.getMethod();
+		if ("GET".equals(method)) {
+			// suspend the connect request
+			resource.suspend();
+			if (registry == null) {
+				registry = getRegistry(resource);
+			}
+		} else if ("POST".equals(method)) {
+			String jsonData = request.getReader().readLine().trim();
+			JSONObject data = new JSONObject(jsonData);
+
+			// lookup the connect request
+			String uuid = (String) request.getAttribute(ApplicationConfig.SUSPENDED_ATMOSPHERE_RESOURCE_UUID);
+			AtmosphereResource suspendedResource = AtmosphereResourceFactory.getDefault().find(uuid);
+			
+			AtmosphereManager atmosphereManager = registry.getService(AtmosphereManager.class);
+			atmosphereManager.initPushTargets(data, suspendedResource);
 		}
-		String[] topics = topicsCsv.split(",");
-		Registry registry = getRegistry(resource);
-		AtmosphereManager broadcasterManager = registry.getService(AtmosphereManager.class);
-		
-		broadcasterManager.register(resource, topics);
 	}
 
 	@Override

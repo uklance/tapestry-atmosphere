@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.tapestry5.BindingConstants;
+import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.Parameter;
@@ -21,13 +22,10 @@ import org.lazan.t5.atmosphere.model.ContainerModel;
 import org.lazan.t5.atmosphere.model.PushTargetModel;
 import org.lazan.t5.atmosphere.services.PageGlobals;
 
-@Import(library = { "atmosphere.js", "tapestry-atmosphere.js", "tapestry-atmosphere.js" })
+@Import(library = { "atmosphere.js", "tapestry-atmosphere.js" })
 public class Container {
 	@Parameter(name="options")
 	private JSONObject options;
-	
-	@Parameter(defaultPrefix=BindingConstants.LITERAL, value="symbol:atmosphere.contentType")
-	private String contentType;
 	
 	@Parameter(defaultPrefix=BindingConstants.LITERAL, value="symbol:atmosphere.logLevel")
 	private String logLevel;
@@ -57,6 +55,9 @@ public class Container {
 	private PageGlobals pageGlobals;
 	
 	@Inject
+    private ComponentResources resources;	
+	
+	@Inject
 	private ApplicationGlobals applicationGlobals;
 
 	private List<PushTargetModel> pushTargets;
@@ -82,29 +83,34 @@ public class Container {
 	}
 	
 	JSONObject createConfig() {
-		JSONObject config = new JSONObject();
 		String baseUrl = baseUrlSource.getBaseURL(secure);
 		String contextPath = applicationGlobals.getServletContext().getContextPath();
 		String url = String.format("%s%s/%s/", baseUrl, contextPath, uri);
 
-		config.put("url", url);
-		config.put("transport", transport);
-		config.put("options", options);
+		JSONObject connectOptions = options == null ? new JSONObject() : new JSONObject(options.toString(true));
+		connectOptions.put("url", url);
+		connectOptions.put("transport", transport);
+		putIfNotNull(connectOptions, "contentType", "application/json");
+		putIfNotNull(connectOptions, "logLevel", logLevel);
+		putIfNotNull(connectOptions, "fallbackTransport", fallbackTransport);
 		
+		JSONObject config = new JSONObject();
+		config.put("connectOptions", connectOptions);
 		EventContext ac = pageGlobals.getPageActivationContext();
+		JSONArray acJson = new JSONArray();
 		for (int i = 0; i < ac.getCount(); ++i) {
-			config.append("ac", ac.get(String.class, i));
+			acJson.put(ac.get(String.class, i));
 		}
+		config.put("ac", acJson);
+		config.put("activePageName", resources.getPageName());
+		config.put("containingPageName", resources.getPageName());
 
-		putIfNotNull(config, "contentType", contentType);
-		putIfNotNull(config, "logLevel", logLevel);
-		putIfNotNull(config, "fallbackTransport", fallbackTransport);
-		
 		for (PushTargetModel pushTarget : pushTargets) {
 			JSONObject targetConfig = new JSONObject();
 			targetConfig.put("topics", new JSONArray(pushTarget.getTopics().toArray()));
 			targetConfig.put("id", pushTarget.getClientId());
-			
+			targetConfig.put("nestedComponentId", pushTarget.getNestedId());
+			targetConfig.put("event", pushTarget.getEvent());
 			config.append("pushTargets", targetConfig);
 		}
 		

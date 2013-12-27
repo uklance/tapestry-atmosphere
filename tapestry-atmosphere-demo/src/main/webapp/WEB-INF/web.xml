@@ -33,7 +33,7 @@
             <param-value>org.lazan.t5.atmosphere.services</param-value>
         </init-param>
         <init-param>
-        	<param-name>org.atmosphere.cpr.objectFactory</param-name>
+        	<param-name>org.atmosphere.cpr.ApplicationConfig.objectFactory</param-name>
         	<param-value>org.lazan.t5.atmosphere.services.TapestryAtmosphereObjectFactory</param-value>
         </init-param>
         <async-supported>true</async-supported>

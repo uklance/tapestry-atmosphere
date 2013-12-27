@@ -2,6 +2,7 @@ T5.extendInitializers({
 	atmosphereContainer: function(options) {
 		var pushTargets = options.pushTargets;
 		var pushTargetsByTopic = {};
+		var subsocket;
 
 		// group pushTargets by topic
 		for (var i = 0; i < pushTargets.length; ++i) {
@@ -18,28 +19,18 @@ T5.extendInitializers({
 			}
 		}
 		
-		var topics = "";
-		var isFirst = true;
-		for (var topic in pushTargetsByTopic) {
-			if (isFirst) {
-				isFirst = false;
-			} else {
-				topics += ",";
-			}
-			topics += topic;
-			
-			console.log("Topic " + topic + " = " + pushTargetsByTopic[topic].length);
-		}
-		
-		var url = options.url + "?topics=" + topics;
+		var request = options.connectOptions;
 
-		var request = {
-			url: url,
-		    contentType : options.contentTYpe,
-		    logLevel : options.logLevel,
-		    transport : options.transport,
-		    fallbackTransport: options.fallbackTransport
-		};
+		request.onOpen = function(response) {
+			console.log("onOpen: " + response);
+			var data = {
+				pushTargets: pushTargets, 
+				ac: options.ac,
+				activePageName: options.activePageName,
+				containingPageName: options.containingPageName,
+			};
+			subsocket.push(Object.toJSON(data));
+		};		
 
 		request.onMessage = function (response) {
 			var messageJson = response.responseBody;
@@ -58,6 +49,6 @@ T5.extendInitializers({
 			}
 		};
 
-		var subsocket = atmosphere.subscribe(request);
+		subsocket = atmosphere.subscribe(request);
 	}
 });
