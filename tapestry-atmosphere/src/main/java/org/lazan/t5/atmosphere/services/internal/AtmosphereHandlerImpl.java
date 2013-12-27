@@ -1,7 +1,6 @@
 package org.lazan.t5.atmosphere.services.internal;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 
@@ -13,8 +12,7 @@ import org.atmosphere.cpr.AtmosphereRequest;
 import org.atmosphere.cpr.AtmosphereResource;
 import org.atmosphere.cpr.AtmosphereResourceEvent;
 import org.atmosphere.cpr.AtmosphereResponse;
-import org.atmosphere.cpr.Broadcaster;
-import org.lazan.t5.atmosphere.services.BroadcasterManager;
+import org.lazan.t5.atmosphere.services.AtmosphereManager;
 
 @AtmosphereHandlerService
 public class AtmosphereHandlerImpl implements AtmosphereHandler {
@@ -33,11 +31,9 @@ public class AtmosphereHandlerImpl implements AtmosphereHandler {
 		}
 		String[] topics = topicsCsv.split(",");
 		Registry registry = getRegistry(resource);
-		BroadcasterManager broadcasterManager = registry.getService(BroadcasterManager.class);
-		List<Broadcaster> broadcasters = broadcasterManager.getBroadcasters(topics);
-		for (Broadcaster broadcaster : broadcasters) {
-			broadcaster.addAtmosphereResource(resource);
-		}
+		AtmosphereManager broadcasterManager = registry.getService(AtmosphereManager.class);
+		
+		broadcasterManager.register(resource, topics);
 	}
 
 	@Override

@@ -7,14 +7,15 @@ import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.ComponentRequestFilter;
 import org.apache.tapestry5.services.LibraryMapping;
-import org.lazan.t5.atmosphere.services.internal.BroadcasterManagerImpl;
+import org.atmosphere.cpr.BroadcasterFactory;
+import org.lazan.t5.atmosphere.services.internal.AtmosphereManagerImpl;
 import org.lazan.t5.atmosphere.services.internal.PageGlobalsComponentRequestFilter;
 import org.lazan.t5.atmosphere.services.internal.PageGlobalsImpl;
 import org.slf4j.Logger;
 
 public class AtmosphereModule {
 	public static void bind(ServiceBinder binder) {
-		binder.bind(BroadcasterManager.class, BroadcasterManagerImpl.class);
+		binder.bind(AtmosphereManager.class, AtmosphereManagerImpl.class);
 		binder.bind(PageGlobals.class, PageGlobalsImpl.class);
 	}
 	
@@ -25,6 +26,10 @@ public class AtmosphereModule {
 		config.add("atmosphere.fallbackTransport", "long-polling");
 		config.add("atmosphere.uri", "atmosphere");
 		config.add("atmosphere.secure", "false");
+	}
+	
+	public BroadcasterFactory buildBroadcasterFactory() {
+		return BroadcasterFactory.getDefault();
 	}
 	
 	public static void contributeIgnoredPathsFilter(Configuration<String> configuration, @Symbol("atmosphere.uri") String atmosphereUri) {
