@@ -39,7 +39,6 @@ public class AppModule {
 			public void run() {
 				for (String topic : topics) {
 					Broadcaster broadcaster = BroadcasterFactory.getDefault().lookup(topic);
-					System.out.println(String.format("Attempting broadcast topic=%s, broadcaster=%s", topic, broadcaster));
 					if (broadcaster != null) {
 						String message = String.format("{\"topic\":\"%s\",\"content\":\"%s : %s\"}", topic, topic, count.incrementAndGet());
 						broadcaster.broadcast(message);
