@@ -111,6 +111,7 @@ public class Container {
 			targetConfig.put("id", pushTarget.getClientId());
 			targetConfig.put("nestedComponentId", pushTarget.getNestedId());
 			targetConfig.put("event", pushTarget.getEvent());
+			targetConfig.put("update", pushTarget.getUpdateStrategy().name());
 			config.append("pushTargets", targetConfig);
 		}
 		

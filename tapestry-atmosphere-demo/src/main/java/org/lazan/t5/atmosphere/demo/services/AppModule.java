@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 @SubModule(AtmosphereModule.class)
 public class AppModule {
 	public static void bind(ServiceBinder binder) {
+		binder.bind(ChatManager.class, ChatManagerImpl.class);
 	}
 	
 	public static void contributeFactoryDefaults(MappedConfiguration<String, Object> configuration) {
@@ -28,7 +29,7 @@ public class AppModule {
 		configuration.add(SymbolConstants.SUPPORTED_LOCALES, "en");
 	}
 	
-	
+	/*
 	@Startup
 	public static void startRandoms(PeriodicExecutor executor, final Logger log, final AtmosphereBroadcaster broadcaster) {
 		final AtomicInteger count = new AtomicInteger(0);
@@ -52,6 +53,6 @@ public class AppModule {
 				}
 			}
 		});
-	}
+	}*/
 	
 }

@@ -32,7 +32,17 @@ T5.extendInitializers({
 				var singleResponse = message[clientId];
 				var content = singleResponse.content;
 				var pushTarget = pushTargetsById[clientId];
-				document.getElementById(clientId).innerHTML = content;
+				
+				var element = document.getElementById(clientId);
+				if (pushTarget.update == 'PREPEND') {
+					var html = content + element.innerHTML;
+					element.innerHTML = html;
+				} else if (pushTarget.update == 'APPEND') {
+					var html = element.innerHTML + content;
+					element.innerHTML = html;
+				} else {
+					element.innerHTML = content;
+				}
 			}
 		};
 

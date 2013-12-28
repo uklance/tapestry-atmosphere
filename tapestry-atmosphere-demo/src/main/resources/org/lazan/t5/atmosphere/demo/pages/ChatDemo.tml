@@ -2,20 +2,69 @@
     xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
     xmlns:p="tapestry:parameter">
     
-    <t:atmos.container>
-    	topic1: <t:atmos.pushTarget
-    		topics="prop:['topic1','topic2']" 
-    		event="chat1"
-    	/>
-    	<br />
-    	
-    	topic2,topic3: <t:atmos.pushTarget
-    		topics="prop:['topic2','topic3']"
-    		event="chat2" 
-    	/>
-    </t:atmos.container>
-    
+    <t:if test="!loggedIn">
+    	<t:form t:id="loginForm">
+    		<t:label for="user">User</t:label>
+    		<t:textfield t:id="user" />
+    		
+    		<t:label for="room">Room</t:label>
+    		<t:select t:id="room" model="rooms" />
+    		
+    		<br />
+    		<input type="submit" value="login" />
+    	</t:form>
+    </t:if>
+    <t:if test="loggedIn">
+	    <t:atmos.container>
+	    	<h3>User: ${user}, Room: ${room}</h3>
+	
+			Other Rooms:    
+	    	<ul>
+		    	<t:loop source="rooms" value="currentRoom">
+		    		<t:if test="otherRoom">
+		    			<li><t:eventlink event="changeRoom" context="currentRoom">Switch to ${currentRoom}</t:eventlink></li>
+		    		</t:if>
+		    	</t:loop>
+			</ul>
+	    	Users:
+	    	<t:atmos.pushTarget
+	    		topics="rooms/${room}/users" 
+	    		event="usersChange"
+	    		update="replace"
+	    	>
+	    		<ul>
+		    		<t:loop source="roomUsers" value="currentUser">
+		    			<li>${currentUser}</li>
+		    		</t:loop>
+		    	</ul>
+	    	</t:atmos.pushTarget>
+	    	<br />
+	    	
+	    	Messages:
+	    	<t:atmos.pushTarget
+	    		topics="prop:messageTopics"
+	    		event="chatMessage"
+	    		update="append" 
+	    	/>
+	    	
+	    	<t:zone t:id="chatFormZone">
+		    	<t:form zone="^" t:id="chatForm">
+		    		<t:label for="outMessage">Message</t:label>
+	    			<t:textfield t:id="outMessage" />
+		    		<br />
+		    		<input type="submit" value="send" />
+		    	</t:form>
+	    	</t:zone>
+	    </t:atmos.container>
+    </t:if>
     <t:block t:id="messageBlock">
-    	${message}
+    	${chatMessage.fromUser}: ${chatMessage.message}<br />
+    </t:block>
+    <t:block t:id="usersBlock">
+   		<ul>
+    		<t:loop source="updatedUsers" value="currentUser">
+    			<li>${currentUser}</li>
+    		</t:loop>
+    	</ul>
     </t:block>
 </t:layout>
