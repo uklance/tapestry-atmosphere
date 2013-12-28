@@ -17,6 +17,8 @@
     <t:if test="loggedIn">
 	    <t:atmos.container>
 	    	<h3>User: ${user}, Room: ${room}</h3>
+	    	
+	    	<t:eventlink event="logout"><button>Logout</button></t:eventlink><br />
 	
 			Other Rooms:    
 	    	<ul>

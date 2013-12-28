@@ -67,6 +67,12 @@ public class ChatDemo {
 		return chatFormZone.getBody();
 	}
 	
+	Object onLogout() {
+		user = null;
+		room = null;
+		return this;
+	}
+	
 	void setupRender() {
 		if (room != null && user != null) {
 			chatManager.joinRoom(room, user);
