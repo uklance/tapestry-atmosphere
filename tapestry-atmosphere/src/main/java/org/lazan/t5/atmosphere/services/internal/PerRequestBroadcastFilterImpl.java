@@ -1,6 +1,5 @@
 package org.lazan.t5.atmosphere.services.internal;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -9,7 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.apache.tapestry5.EventContext;
-import org.apache.tapestry5.internal.EmptyEventContext;
 import org.apache.tapestry5.internal.services.ArrayEventContext;
 import org.apache.tapestry5.ioc.services.TypeCoercer;
 import org.apache.tapestry5.json.JSONObject;
@@ -27,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PerRequestBroadcastFilterImpl implements PerRequestBroadcastFilter {
-	private static final EventContext EMPTY_EVENT_CONTEXT = new EmptyEventContext();
 	private static final Logger logger = LoggerFactory.getLogger(PerRequestBroadcastFilterImpl.class);
 
 	private final AtmosphereManager atmosphereManager;
@@ -43,11 +40,11 @@ public class PerRequestBroadcastFilterImpl implements PerRequestBroadcastFilter 
 	}
 
 	@Override
-	public BroadcastAction filter(AtmosphereResource resource, Object originalMessage, Object message) {
-		TopicMessage tMessage = (TopicMessage) message;
+	public BroadcastAction filter(AtmosphereResource resource, Object originalMessage, Object oMessage) {
+		TopicMessage tMessage = (TopicMessage) oMessage;
 		
 		ContainerClientModel containerModel = atmosphereManager.getContainerClientModel(resource);
-		EventContext eventContext = createEventContext(tMessage.getEventContext());
+		EventContext eventContext = new ArrayEventContext(typeCoercer, tMessage.getMessage());
 		Collection<PushTargetClientModel> pushTargets = containerModel.getPushTargetsForTopic(tMessage.getTopic());
 		
 		JSONObject allResults = new JSONObject();
@@ -102,11 +99,4 @@ public class PerRequestBroadcastFilterImpl implements PerRequestBroadcastFilter 
 	public BroadcastAction filter(Object originalMessage, Object message) {
 		return new BroadcastAction(message);
 	}
-	
-	protected EventContext createEventContext(Object[] array) {
-		if (array == null || array.length == 0) {
-			return EMPTY_EVENT_CONTEXT;
-		}
-		return new ArrayEventContext(typeCoercer, array);
-	}	
 }

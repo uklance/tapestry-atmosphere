@@ -1,7 +1,5 @@
 package org.lazan.t5.atmosphere.services;
 
-import java.util.Map;
-
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
@@ -16,6 +14,7 @@ import org.atmosphere.cpr.AtmosphereHandler;
 import org.atmosphere.cpr.AtmosphereResourceEventListener;
 import org.atmosphere.cpr.AtmosphereResourceFactory;
 import org.atmosphere.cpr.BroadcasterFactory;
+import org.lazan.t5.atmosphere.services.internal.AtmosphereBroadcasterImpl;
 import org.lazan.t5.atmosphere.services.internal.AtmosphereHandlerImpl;
 import org.lazan.t5.atmosphere.services.internal.AtmosphereHttpServletRequestFilter;
 import org.lazan.t5.atmosphere.services.internal.AtmosphereManagerImpl;
@@ -34,6 +33,9 @@ public class AtmosphereModule {
 		binder.bind(AtmosphereHttpServletRequestFilter.class, AtmosphereHttpServletRequestFilter.class);
 		binder.bind(AtmosphereResourceEventListener.class, AtmosphereResourceEventListenerImpl.class);
 		binder.bind(AtmosphereSessionManager.class, AtmosphereSessionManagerImpl.class);
+		binder.bind(AtmosphereBroadcaster.class, AtmosphereBroadcasterImpl.class);
+
+		// note that the concrete class is required here
 		binder.bind(PerRequestBroadcastFilterImpl.class, PerRequestBroadcastFilterImpl.class);
 	}
 	
@@ -43,20 +45,6 @@ public class AtmosphereModule {
 		config.add("atmosphere.fallbackTransport", "long-polling");
 		config.add("atmosphere.uri", "atmosphere");
 		config.add("atmosphere.secure", "false");
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public void contributeAtmosphereObjectFactoryOverrideProvider(MappedConfiguration<Class, Class> config) {
-		//config.add(DefaultBroadcaster.class, TapestryBroadcaster.class);
-	}
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public AtmosphereObjectFactoryOverrideProvider buildAtmosphereObjectFactoryOverrideProvider(final Map<Class, Class> overrides) {
-		return new AtmosphereObjectFactoryOverrideProvider() {
-			public <T> Class<? extends T> getOverride(Class<T> type) {
-				return overrides.get(type);
-			}
-		};
 	}
 	
 	public static AtmosphereFramework buildAtmosphereFramework(AtmosphereHttpServletRequestFilter atmosphereFilter) {
@@ -93,7 +81,7 @@ public class AtmosphereModule {
 	}
 	
 	@Startup
-	public static void configureAtmosphereHandler(AtmosphereHandler handler, AtmosphereFramework framework) {
+	public static void configureAtmosphereFramework(AtmosphereFramework framework, AtmosphereHandler handler) {
 		framework.addAtmosphereHandler("/", handler);
 	}
 }

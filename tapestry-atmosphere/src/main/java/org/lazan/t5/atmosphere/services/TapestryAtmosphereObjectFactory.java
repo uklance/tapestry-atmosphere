@@ -23,16 +23,8 @@ public class TapestryAtmosphereObjectFactory implements AtmosphereObjectFactory 
 	{
 		Registry registry = getRegistry(framework);
 		
-		// first attempt override
-		AtmosphereObjectFactoryOverrideProvider overrideProvider = registry.getService(AtmosphereObjectFactoryOverrideProvider.class);
-		Class<?> override = overrideProvider.getOverride(type);
-		if (override != null) {
-			logger.debug("Found override {} for {}", override.getSimpleName(), type.getSimpleName());
-			return type.cast(registry.autobuild(override));
-		}
-		
 		try {
-			// now attempt service lookup
+			// attempt service lookup
 			T service = registry.getService(type);
 			logger.debug("Found {} in tapestry registry", type.getSimpleName());
 			return service;

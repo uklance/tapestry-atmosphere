@@ -10,9 +10,7 @@ import org.apache.tapestry5.ioc.annotations.SubModule;
 import org.apache.tapestry5.ioc.services.cron.IntervalSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.apache.tapestry5.ioc.services.cron.Schedule;
-import org.atmosphere.cpr.Broadcaster;
-import org.atmosphere.cpr.BroadcasterFactory;
-import org.lazan.t5.atmosphere.model.TopicMessage;
+import org.lazan.t5.atmosphere.services.AtmosphereBroadcaster;
 import org.lazan.t5.atmosphere.services.AtmosphereModule;
 import org.slf4j.Logger;
 
@@ -32,7 +30,7 @@ public class AppModule {
 	
 	
 	@Startup
-	public static void startRandoms(PeriodicExecutor executor, final Logger log) {
+	public static void startRandoms(PeriodicExecutor executor, final Logger log, final AtmosphereBroadcaster broadcaster) {
 		final AtomicInteger count = new AtomicInteger(0);
 		final String[] topics = new String[] { "topic1", "topic2", "topic3" };
 		Schedule schedule = new IntervalSchedule(5000);
@@ -40,22 +38,9 @@ public class AppModule {
 			public void run() {
 				try {
 					for (final String topic : topics) {
-						Broadcaster broadcaster = BroadcasterFactory.getDefault().lookup(topic);
-						if (broadcaster != null) {
-							TopicMessage message = new TopicMessage() {
-								public String getTopic() {
-									return topic;
-								}
-								
-								@Override
-								public Object[] getEventContext() {
-									return new Object[] { topic + ": " + count.incrementAndGet() };
-								}
-							};
-							
-							System.out.println("Broadcasting " + message);
-							broadcaster.broadcast(message);
-						}
+						String message = topic + ": " + count.incrementAndGet();
+						System.out.println("Broadcasting " + message);
+						broadcaster.broadcast(topic, message);
 						try {
 							Thread.sleep(2000);
 						} catch (InterruptedException e) {
