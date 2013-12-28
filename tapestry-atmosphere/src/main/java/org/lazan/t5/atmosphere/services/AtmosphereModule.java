@@ -1,5 +1,7 @@
 package org.lazan.t5.atmosphere.services;
 
+import java.util.Map;
+
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
@@ -11,13 +13,17 @@ import org.apache.tapestry5.services.LibraryMapping;
 import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.AtmosphereFramework;
 import org.atmosphere.cpr.AtmosphereHandler;
+import org.atmosphere.cpr.AtmosphereResourceEventListener;
 import org.atmosphere.cpr.AtmosphereResourceFactory;
 import org.atmosphere.cpr.BroadcasterFactory;
 import org.lazan.t5.atmosphere.services.internal.AtmosphereHandlerImpl;
 import org.lazan.t5.atmosphere.services.internal.AtmosphereHttpServletRequestFilter;
 import org.lazan.t5.atmosphere.services.internal.AtmosphereManagerImpl;
+import org.lazan.t5.atmosphere.services.internal.AtmosphereResourceEventListenerImpl;
+import org.lazan.t5.atmosphere.services.internal.AtmosphereSessionManagerImpl;
 import org.lazan.t5.atmosphere.services.internal.PageGlobalsComponentRequestFilter;
 import org.lazan.t5.atmosphere.services.internal.PageGlobalsImpl;
+import org.lazan.t5.atmosphere.services.internal.PerRequestBroadcastFilterImpl;
 import org.slf4j.Logger;
 
 public class AtmosphereModule {
@@ -26,6 +32,9 @@ public class AtmosphereModule {
 		binder.bind(PageGlobals.class, PageGlobalsImpl.class);
 		binder.bind(AtmosphereHandler.class, AtmosphereHandlerImpl.class);
 		binder.bind(AtmosphereHttpServletRequestFilter.class, AtmosphereHttpServletRequestFilter.class);
+		binder.bind(AtmosphereResourceEventListener.class, AtmosphereResourceEventListenerImpl.class);
+		binder.bind(AtmosphereSessionManager.class, AtmosphereSessionManagerImpl.class);
+		binder.bind(PerRequestBroadcastFilterImpl.class, PerRequestBroadcastFilterImpl.class);
 	}
 	
 	public static void contributeFactoryDefaults(MappedConfiguration<String, String> config) {
@@ -34,6 +43,20 @@ public class AtmosphereModule {
 		config.add("atmosphere.fallbackTransport", "long-polling");
 		config.add("atmosphere.uri", "atmosphere");
 		config.add("atmosphere.secure", "false");
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public void contributeAtmosphereObjectFactoryOverrideProvider(MappedConfiguration<Class, Class> config) {
+		//config.add(DefaultBroadcaster.class, TapestryBroadcaster.class);
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public AtmosphereObjectFactoryOverrideProvider buildAtmosphereObjectFactoryOverrideProvider(final Map<Class, Class> overrides) {
+		return new AtmosphereObjectFactoryOverrideProvider() {
+			public <T> Class<? extends T> getOverride(Class<T> type) {
+				return overrides.get(type);
+			}
+		};
 	}
 	
 	public static AtmosphereFramework buildAtmosphereFramework(AtmosphereHttpServletRequestFilter atmosphereFilter) {
@@ -66,6 +89,7 @@ public class AtmosphereModule {
 	
 	public static void contributeAtmosphereHttpServletRequestFilter(MappedConfiguration<String, String> config) {
 		config.add(ApplicationConfig.OBJECT_FACTORY, TapestryAtmosphereObjectFactory.class.getName());
+		config.add(ApplicationConfig.BROADCAST_FILTER_CLASSES, PerRequestBroadcastFilterImpl.class.getName());
 	}
 	
 	@Startup

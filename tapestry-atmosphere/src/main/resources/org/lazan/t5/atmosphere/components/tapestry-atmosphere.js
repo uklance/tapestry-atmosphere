@@ -1,22 +1,13 @@
 T5.extendInitializers({
 	atmosphereContainer: function(options) {
 		var pushTargets = options.pushTargets;
-		var pushTargetsByTopic = {};
+		var pushTargetsById = {};
 		var subsocket;
 
 		// group pushTargets by topic
 		for (var i = 0; i < pushTargets.length; ++i) {
 			var pushTarget = pushTargets[i];
-			for (var j = 0; j < pushTarget.topics.length; ++ j) {
-				var topic = pushTarget.topics[j];
-				console.log("  " + topic);
-				var group = pushTargetsByTopic[topic];
-				if (group == null) {
-					group = [];
-					pushTargetsByTopic[topic] = group;
-				}
-				group.push(pushTarget);
-			}
+			pushTargetsById[pushTarget.id] = pushTarget;
 		}
 		
 		var request = options.connectOptions;
@@ -36,16 +27,12 @@ T5.extendInitializers({
 			var messageJson = response.responseBody;
 			// prototype specific
 			var message = messageJson.evalJSON();
-			var topic = message.topic;
-			var content = message.content;
-			var list = pushTargetsByTopic[topic];
-			console.log("Message received=" + messageJson + ", listSize=" + list.length);
-			if (list) {
-				for (var i=0; i < list.length; ++i) {
-					var pushTarget = list[i];
-					console.log("Updating=" + pushTarget.id);
-					document.getElementById(pushTarget.id).innerHTML = content;
-				}
+			
+			for (var clientId in message) {
+				var singleResponse = message[clientId];
+				var content = singleResponse.content;
+				var pushTarget = pushTargetsById[clientId];
+				document.getElementById(clientId).innerHTML = content;
 			}
 		};
 

@@ -1,49 +1,100 @@
 package org.lazan.t5.atmosphere.services.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.tapestry5.EventContext;
+import org.apache.tapestry5.internal.EmptyEventContext;
+import org.apache.tapestry5.internal.services.ArrayEventContext;
+import org.apache.tapestry5.ioc.services.TypeCoercer;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.atmosphere.cpr.AtmosphereResource;
 import org.atmosphere.cpr.Broadcaster;
 import org.atmosphere.cpr.BroadcasterFactory;
+import org.lazan.t5.atmosphere.model.ContainerClientModel;
+import org.lazan.t5.atmosphere.model.PushTargetClientModel;
 import org.lazan.t5.atmosphere.services.AtmosphereManager;
+import org.lazan.t5.atmosphere.services.AtmosphereSessionManager;
 
 public class AtmosphereManagerImpl implements AtmosphereManager {
-	private final BroadcasterFactory broadcasterFactory;
+	private static final EventContext EMPTY_EVENT_CONTEXT = new EmptyEventContext();
+	private static final String ATTRIBUTE_CONTAINER_CLIENT_MODEL = AtmosphereManager.class.getName() + ".ContainerClientModel";
 	
-	public AtmosphereManagerImpl(BroadcasterFactory broadcasterFactory) {
+	private final BroadcasterFactory broadcasterFactory;
+	private final TypeCoercer typeCoercer;
+	private final AtmosphereSessionManager sessionManager;
+	
+	public AtmosphereManagerImpl(BroadcasterFactory broadcasterFactory, TypeCoercer typeCoercer,
+			AtmosphereSessionManager sessionManager) {
 		super();
 		this.broadcasterFactory = broadcasterFactory;
+		this.typeCoercer = typeCoercer;
+		this.sessionManager = sessionManager;
 	}
 
+	@Override
+	public ContainerClientModel initContainerClientModel(AtmosphereResource resource, JSONObject data) {
+		ContainerClientModel containerModel = createContainerClientModel(data);
+		sessionManager.setAttribute(resource, ATTRIBUTE_CONTAINER_CLIENT_MODEL, containerModel);
+		register(resource, containerModel.getTopics());
+		return containerModel;
+	}
+	
+	@Override
+	public ContainerClientModel getContainerClientModel(AtmosphereResource resource) {
+		return sessionManager.getAttribute(resource, ATTRIBUTE_CONTAINER_CLIENT_MODEL, ContainerClientModel.class);
+	}
+	
 	protected void register(AtmosphereResource resource, Collection<String> topics) {
 		for (String topic : topics) {
 			Broadcaster broadcaster = broadcasterFactory.lookup(topic, true);
 			broadcaster.addAtmosphereResource(resource);
 		}
 	}
-	
-	@Override
-	public void initPushTargets(JSONObject data, AtmosphereResource resource) {
-		Set<String> topicSet = new LinkedHashSet<String>();
+
+	protected ContainerClientModel createContainerClientModel(JSONObject data) {
 		JSONArray pushTargets = data.getJSONArray("pushTargets");
-		JSONArray pageActivationContext = data.getJSONArray("ac");
-		String activePageName = data.getString("activePageName");
-		String containingPageName = data.getString("containingPageName");
+		JSONArray ac = data.getJSONArray("ac");
+		List<PushTargetClientModel> pushTargetModels = new ArrayList<PushTargetClientModel>();
 		for (int i = 0; i < pushTargets.length(); ++i) {
 			JSONObject pushTarget = pushTargets.getJSONObject(i);
-			String nestedComponentId = pushTarget.getString("nestedComponentId");
-			String event = pushTarget.getString("event");
-			String clientId = pushTarget.getString("id");
-			JSONArray topics = pushTarget.getJSONArray("topics");
-			
-			for (int j = 0; j < topics.length(); ++j) {
-				topicSet.add(topics.getString(j));
-			}
+			pushTargetModels.add(createPushTargetClientModel(pushTarget));
 		}
-		register(resource, topicSet);
+		String activePageName = data.getString("activePageName");
+		String containingPageName = data.getString("containingPageName");
+		EventContext pageActivationContext = createEventContext(ac);
+
+		ContainerClientModel containerModel = new ContainerClientModel(activePageName, containingPageName, pageActivationContext, pushTargetModels);
+		return containerModel;
+	}
+
+	protected PushTargetClientModel createPushTargetClientModel(JSONObject pushTarget) {
+		JSONArray jsonTopics = pushTarget.getJSONArray("topics");
+		Set<String> topics = new LinkedHashSet<String>();
+		for (int j = 0; j < jsonTopics.length(); ++j) {
+			String topic = jsonTopics.getString(j);
+			topics.add(topic);
+		}
+
+		String nestedComponentId = pushTarget.getString("nestedComponentId");
+		String event = pushTarget.getString("event");
+		String clientId = pushTarget.getString("id");
+		PushTargetClientModel pushTargetModel = new PushTargetClientModel(nestedComponentId, clientId, event, topics);
+		return pushTargetModel;
+	}
+	
+	protected EventContext createEventContext(JSONArray jsonArray) {
+		if (jsonArray == null || jsonArray.length() == 0) {
+			return EMPTY_EVENT_CONTEXT;
+		}
+		Object[] array = new String[jsonArray.length()];
+		for (int i = 0; i < jsonArray.length(); ++i) {
+			array[i] = jsonArray.getString(i);
+		}
+		return new ArrayEventContext(typeCoercer, array);
 	}
 }

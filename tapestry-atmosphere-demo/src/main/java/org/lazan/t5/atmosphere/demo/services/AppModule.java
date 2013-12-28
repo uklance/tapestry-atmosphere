@@ -12,6 +12,7 @@ import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.apache.tapestry5.ioc.services.cron.Schedule;
 import org.atmosphere.cpr.Broadcaster;
 import org.atmosphere.cpr.BroadcasterFactory;
+import org.lazan.t5.atmosphere.model.TopicMessage;
 import org.lazan.t5.atmosphere.services.AtmosphereModule;
 import org.slf4j.Logger;
 
@@ -37,17 +38,32 @@ public class AppModule {
 		Schedule schedule = new IntervalSchedule(5000);
 		executor.addJob(schedule, "garbage", new Runnable() {
 			public void run() {
-				for (String topic : topics) {
-					Broadcaster broadcaster = BroadcasterFactory.getDefault().lookup(topic);
-					if (broadcaster != null) {
-						String message = String.format("{\"topic\":\"%s\",\"content\":\"%s : %s\"}", topic, topic, count.incrementAndGet());
-						broadcaster.broadcast(message);
+				try {
+					for (final String topic : topics) {
+						Broadcaster broadcaster = BroadcasterFactory.getDefault().lookup(topic);
+						if (broadcaster != null) {
+							TopicMessage message = new TopicMessage() {
+								public String getTopic() {
+									return topic;
+								}
+								
+								@Override
+								public Object[] getEventContext() {
+									return new Object[] { topic + ": " + count.incrementAndGet() };
+								}
+							};
+							
+							System.out.println("Broadcasting " + message);
+							broadcaster.broadcast(message);
+						}
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							throw new RuntimeException(e);
+						}
 					}
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		});

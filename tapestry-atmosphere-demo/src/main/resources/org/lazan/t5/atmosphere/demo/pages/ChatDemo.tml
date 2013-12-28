@@ -4,7 +4,7 @@
     
     <t:atmos.container>
     	topic1: <t:atmos.pushTarget
-    		topics="topic1" 
+    		topics="prop:['topic1','topic2']" 
     		event="chat1"
     	/>
     	<br />
@@ -14,4 +14,8 @@
     		event="chat2" 
     	/>
     </t:atmos.container>
+    
+    <t:block t:id="messageBlock">
+    	${message}
+    </t:block>
 </t:layout>

@@ -8,18 +8,25 @@ import org.atmosphere.cpr.AtmosphereHandler;
 import org.atmosphere.cpr.AtmosphereRequest;
 import org.atmosphere.cpr.AtmosphereResource;
 import org.atmosphere.cpr.AtmosphereResourceEvent;
+import org.atmosphere.cpr.AtmosphereResourceEventListener;
 import org.atmosphere.cpr.AtmosphereResourceFactory;
 import org.atmosphere.cpr.AtmosphereResponse;
 import org.lazan.t5.atmosphere.services.AtmosphereManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AtmosphereHandlerImpl implements AtmosphereHandler {
+	private static final Logger logger = LoggerFactory.getLogger(AtmosphereHandlerImpl.class);
 	private final AtmosphereManager manager;
 	private final AtmosphereResourceFactory resourceFactory;
+	private final AtmosphereResourceEventListener resourceEventListener;
 	
-	public AtmosphereHandlerImpl(AtmosphereManager manager, AtmosphereResourceFactory resourceFactory) {
+	public AtmosphereHandlerImpl(AtmosphereManager manager, AtmosphereResourceFactory resourceFactory,
+			AtmosphereResourceEventListener resourceEventListener) {
 		super();
 		this.manager = manager;
 		this.resourceFactory = resourceFactory;
+		this.resourceEventListener = resourceEventListener;
 	}
 
 	@Override
@@ -27,6 +34,8 @@ public class AtmosphereHandlerImpl implements AtmosphereHandler {
 		AtmosphereRequest request = resource.getRequest();
 		String method = request.getMethod();
 		if ("GET".equals(method)) {
+			resource.addEventListener(resourceEventListener);
+
 			// suspend the connect request
 			resource.suspend();
 		} else if ("POST".equals(method)) {
@@ -37,7 +46,7 @@ public class AtmosphereHandlerImpl implements AtmosphereHandler {
 			String uuid = (String) request.getAttribute(ApplicationConfig.SUSPENDED_ATMOSPHERE_RESOURCE_UUID);
 			AtmosphereResource suspendedResource = resourceFactory.find(uuid);
 			
-			manager.initPushTargets(data, suspendedResource);
+			manager.initContainerClientModel(suspendedResource, data);
 		}
 	}
 
@@ -58,7 +67,7 @@ public class AtmosphereHandlerImpl implements AtmosphereHandler {
 				response.getWriter().flush();
 			}
 		} else if (!event.isResuming()) {
-			System.out.println("NOT RESUMING");
+			logger.warn("Not resuming {}", event.getResource().uuid());
 		}
 	}
 	

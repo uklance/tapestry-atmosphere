@@ -10,20 +10,34 @@ import org.atmosphere.cpr.AtmosphereObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Note: This is not a tapestry managed service. It is instantiated by Atmosphere
+ */
 public class TapestryAtmosphereObjectFactory implements AtmosphereObjectFactory {
 	private static final AtmosphereObjectFactory FALLBACK_OBJECT_FACTORY = new DefaultAtmosphereObjectFactory();
 	private static final Logger logger = LoggerFactory.getLogger(TapestryAtmosphereObjectFactory.class);
-	
+
 	@Override
 	public <T> T newClassInstance(AtmosphereFramework framework, Class<T> type) throws InstantiationException,
 			IllegalAccessException
 	{
 		Registry registry = getRegistry(framework);
+		
+		// first attempt override
+		AtmosphereObjectFactoryOverrideProvider overrideProvider = registry.getService(AtmosphereObjectFactoryOverrideProvider.class);
+		Class<?> override = overrideProvider.getOverride(type);
+		if (override != null) {
+			logger.debug("Found override {} for {}", override.getSimpleName(), type.getSimpleName());
+			return type.cast(registry.autobuild(override));
+		}
+		
 		try {
+			// now attempt service lookup
 			T service = registry.getService(type);
 			logger.debug("Found {} in tapestry registry", type.getSimpleName());
 			return service;
 		} catch (RuntimeException e) {
+			// fallback to default
 			logger.debug("Falling back to default lookup for {}", type.getSimpleName());
 			return FALLBACK_OBJECT_FACTORY.newClassInstance(framework, type);
 		}
