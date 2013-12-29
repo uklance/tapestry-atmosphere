@@ -25,7 +25,7 @@ public class ChatTopicListener implements TopicListener {
 	public void onDisconnect(AtmosphereResource resource, String topic) {
 		Matcher matcher = ROOM_PATTERN.matcher(topic);
 		if (matcher.matches()) {
-			HttpSession session = resource.getRequest().getSession(true);
+			HttpSession session = resource.getRequest().getSession(false);
 			if (session != null) {
 				String chatUser = (String) session.getAttribute("CHAT_USER");
 				if (chatUser != null) {
