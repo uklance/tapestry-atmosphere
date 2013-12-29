@@ -13,59 +13,66 @@
     		<t:select t:id="room" model="rooms" validate="required" />
     		
     		<br />
-    		<input type="submit" value="login" />
+    		<button class="btn btn-primary" type="submit">Login</button>
     	</t:form>
     </t:if>
     <t:if test="loggedIn">
 	    <t:atmos.container>
-	    	<h3>User: ${user}, Room: ${room}</h3>
-	    	
-	    	<t:eventlink event="logout"><button>Logout</button></t:eventlink><br />
-	
-			Other Rooms:    
-	    	<ul>
-		    	<t:loop source="rooms" value="currentRoom">
-		    		<t:if test="otherRoom">
-		    			<li><t:eventlink event="changeRoom" context="currentRoom">Switch to ${currentRoom}</t:eventlink></li>
-		    		</t:if>
-		    	</t:loop>
-			</ul>
-	    	Users:
-	    	<t:atmos.pushTarget
-	    		topics="rooms/${room}/users" 
-	    		event="usersChange"
-	    		update="replace"
-	    	>
-	    		<ul>
-		    		<t:loop source="roomUsers" value="currentUser">
-		    			<li>${currentUser}</li>
-		    		</t:loop>
-		    	</ul>
-	    	</t:atmos.pushTarget>
-	    	<br />
-	    	
-	    	Messages:
-	    	<t:atmos.pushTarget
-	    		topics="prop:messageTopics"
-	    		event="chatMessage"
-	    		update="append" 
-	    	>
-	    		<t:loop source="recentMessages" value="chatMessage">
-	    			<t:delegate to="block:messageBlock" />
-	    		</t:loop> 
-	    	</t:atmos.pushTarget>
-	    	<t:zone t:id="chatFormZone">
-		    	<t:form zone="^" t:id="chatForm">
-		    		<t:label for="outMessage">Message</t:label>
-	    			<t:textfield t:id="outMessage" />
-		    		<br />
-		    		<input type="submit" value="send" />
-		    	</t:form>
-	    	</t:zone>
-	    </t:atmos.container>
+		    <div class="row-fluid">
+		    	<div class="span5">
+			    	<div class="well">
+			    		User: <strong>${user}</strong> Room: <strong>${room}</strong>
+			    	</div>
+			    	
+					Other Rooms:    
+			    	<ul>
+				    	<t:loop source="rooms" value="currentRoom">
+				    		<t:if test="otherRoom">
+				    			<li><t:eventlink event="changeRoom" context="currentRoom">Switch to ${currentRoom}</t:eventlink></li>
+				    		</t:if>
+				    	</t:loop>
+					</ul>
+					
+			    	Users in room ${room}:
+			    	<t:atmos.pushTarget
+			    		topics="rooms/${room}/users" 
+			    		event="usersChange"
+			    		update="replace"
+			    	>
+			    		<ul>
+				    		<t:loop source="roomUsers" value="currentUser">
+				    			<li>${currentUser}</li>
+				    		</t:loop>
+				    	</ul>
+			    	</t:atmos.pushTarget>
+			    	<br />
+			    	<t:zone t:id="chatFormZone">
+				    	<t:form zone="^" t:id="chatForm">
+				    		<t:label for="outMessage">Chat</t:label>
+			    			<t:textfield t:id="outMessage" />
+				    		<br />
+				    		<button class="btn btn-primary" type="submit">Send</button>&nbsp;
+				    		<t:eventlink event="logout" class="btn btn-primary">Logout</t:eventlink>
+				    	</t:form>
+			    	</t:zone>
+			    </div>
+			    <div class="span5">
+			    	<t:atmos.pushTarget
+			    		topics="prop:messageTopics"
+			    		event="chatMessage"
+			    		update="append" 
+			    		class="well"
+			    	>
+			    		<t:loop source="recentMessages" value="chatMessage">
+			    			<t:delegate to="block:messageBlock" />
+			    		</t:loop> 
+			    	</t:atmos.pushTarget>
+			    </div>
+			</div>
+		</t:atmos.container>
     </t:if>
     <t:block t:id="messageBlock">
-    	${chatMessage.fromUser}: ${chatMessage.message}<br />
+    	<strong>${chatMessage.fromUser}:</strong>${chatMessage.message}<br />
     </t:block>
     <t:block t:id="usersBlock">
    		<ul>

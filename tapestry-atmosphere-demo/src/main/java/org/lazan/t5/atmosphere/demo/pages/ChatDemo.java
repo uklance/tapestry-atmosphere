@@ -69,6 +69,7 @@ public class ChatDemo {
 	}
 	
 	Object onLogout() {
+		chatManager.leaveRoom(room, user);
 		user = null;
 		room = null;
 		return this;

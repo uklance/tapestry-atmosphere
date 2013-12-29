@@ -14,7 +14,7 @@ import org.lazan.t5.atmosphere.demo.model.ChatMessage;
 import org.lazan.t5.atmosphere.services.AtmosphereBroadcaster;
 
 public class ChatManagerImpl implements ChatManager {
-	private final String ADMINISTRATOR = "administrator";
+	private final String ADMINISTRATOR = "admin";
 	private static final List<String> ROOMS = Collections.unmodifiableList(Arrays.asList("cars", "dogs", "tapestry", "java"));
 	private static final int RECENT_MESSAGE_COUNT = 10;
 	
