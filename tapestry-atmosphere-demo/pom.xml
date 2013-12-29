@@ -13,6 +13,12 @@
 			<artifactId>tapestry-atmosphere</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${servlet.version}</version>
+			<scope>provided</scope>
+		</dependency>		
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -31,5 +37,6 @@
 	</build>
 
 	<properties>
+		<servlet.version>2.5</servlet.version>
 	</properties>
 </project>

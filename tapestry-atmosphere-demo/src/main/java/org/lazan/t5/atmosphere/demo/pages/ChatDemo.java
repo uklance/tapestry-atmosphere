@@ -6,11 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.tapestry5.Block;
-import org.apache.tapestry5.PersistenceConstants;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.PageActivationContext;
-import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.annotations.SessionAttribute;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.lazan.t5.atmosphere.demo.model.ChatMessage;
@@ -21,7 +20,7 @@ public class ChatDemo {
 	@PageActivationContext
 	private String room;
 
-	@Persist(PersistenceConstants.SESSION)
+	@SessionAttribute("CHAT_USER")
 	@Property
 	private String user;
 	

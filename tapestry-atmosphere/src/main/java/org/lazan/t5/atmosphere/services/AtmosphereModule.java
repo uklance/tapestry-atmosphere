@@ -21,6 +21,7 @@ import org.lazan.t5.atmosphere.services.internal.AtmosphereManagerImpl;
 import org.lazan.t5.atmosphere.services.internal.AtmosphereResourceEventListenerImpl;
 import org.lazan.t5.atmosphere.services.internal.AtmosphereSessionManagerImpl;
 import org.lazan.t5.atmosphere.services.internal.NoopTopicAuthorizer;
+import org.lazan.t5.atmosphere.services.internal.NoopTopicListener;
 import org.lazan.t5.atmosphere.services.internal.PageGlobalsComponentRequestFilter;
 import org.lazan.t5.atmosphere.services.internal.PageGlobalsImpl;
 import org.lazan.t5.atmosphere.services.internal.PerRequestBroadcastFilterImpl;
@@ -36,6 +37,7 @@ public class AtmosphereModule {
 		binder.bind(AtmosphereSessionManager.class, AtmosphereSessionManagerImpl.class);
 		binder.bind(AtmosphereBroadcaster.class, AtmosphereBroadcasterImpl.class);
 		binder.bind(TopicAuthorizer.class, NoopTopicAuthorizer.class);
+		binder.bind(TopicListener.class, NoopTopicListener.class);
 
 		// note that the concrete class is required here
 		binder.bind(PerRequestBroadcastFilterImpl.class, PerRequestBroadcastFilterImpl.class);
@@ -80,6 +82,7 @@ public class AtmosphereModule {
 	public static void contributeAtmosphereHttpServletRequestFilter(MappedConfiguration<String, String> config) {
 		config.add(ApplicationConfig.OBJECT_FACTORY, TapestryAtmosphereObjectFactory.class.getName());
 		config.add(ApplicationConfig.BROADCAST_FILTER_CLASSES, PerRequestBroadcastFilterImpl.class.getName());
+		config.add(ApplicationConfig.PROPERTY_SESSION_SUPPORT, "true");
 	}
 	
 	@Startup

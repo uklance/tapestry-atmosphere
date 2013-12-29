@@ -20,6 +20,7 @@ import org.lazan.t5.atmosphere.model.PushTargetClientModel;
 import org.lazan.t5.atmosphere.services.AtmosphereManager;
 import org.lazan.t5.atmosphere.services.AtmosphereSessionManager;
 import org.lazan.t5.atmosphere.services.TopicAuthorizer;
+import org.lazan.t5.atmosphere.services.TopicListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,14 +33,16 @@ public class AtmosphereManagerImpl implements AtmosphereManager {
 	private final TypeCoercer typeCoercer;
 	private final AtmosphereSessionManager sessionManager;
 	private final TopicAuthorizer topicAuthorizer;
+	private final TopicListener topicListener;
 	
 	public AtmosphereManagerImpl(BroadcasterFactory broadcasterFactory, TypeCoercer typeCoercer,
-			AtmosphereSessionManager sessionManager, TopicAuthorizer topicAuthorizer) {
+			AtmosphereSessionManager sessionManager, TopicAuthorizer topicAuthorizer, TopicListener topicListener) {
 		super();
 		this.broadcasterFactory = broadcasterFactory;
 		this.typeCoercer = typeCoercer;
 		this.sessionManager = sessionManager;
 		this.topicAuthorizer = topicAuthorizer;
+		this.topicListener = topicListener;
 	}
 
 	@Override
@@ -60,6 +63,8 @@ public class AtmosphereManagerImpl implements AtmosphereManager {
 			if (topicAuthorizer.isAuthorized(resource, topic)) {
 				Broadcaster broadcaster = broadcasterFactory.lookup(topic, true);
 				broadcaster.addAtmosphereResource(resource);
+				
+				topicListener.onConnect(resource, topic);
 			} else {
 				logger.error("Unauthorized topic {} for uuid {}", topic, resource.uuid());
 			}

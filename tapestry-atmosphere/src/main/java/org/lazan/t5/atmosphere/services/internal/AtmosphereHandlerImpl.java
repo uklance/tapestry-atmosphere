@@ -2,6 +2,8 @@ package org.lazan.t5.atmosphere.services.internal;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.tapestry5.json.JSONObject;
 import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.AtmosphereHandler;
@@ -35,7 +37,6 @@ public class AtmosphereHandlerImpl implements AtmosphereHandler {
 		String method = request.getMethod();
 		if ("GET".equals(method)) {
 			resource.addEventListener(resourceEventListener);
-
 			// suspend the connect request
 			resource.suspend();
 		} else if ("POST".equals(method)) {
@@ -45,7 +46,7 @@ public class AtmosphereHandlerImpl implements AtmosphereHandler {
 			// lookup the connect request
 			String uuid = (String) request.getAttribute(ApplicationConfig.SUSPENDED_ATMOSPHERE_RESOURCE_UUID);
 			AtmosphereResource suspendedResource = resourceFactory.find(uuid);
-			
+
 			manager.initContainerClientModel(suspendedResource, data);
 		}
 	}
