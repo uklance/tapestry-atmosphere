@@ -3,6 +3,7 @@ package org.lazan.t5.atmosphere.demo.services;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -14,14 +15,19 @@ import org.lazan.t5.atmosphere.services.AtmosphereBroadcaster;
 
 public class ChatManagerImpl implements ChatManager {
 	private final String ADMINISTRATOR = "administrator";
-	private static final List<String> ROOMS = Arrays.asList("cars", "dogs", "tapestry", "java");
+	private static final List<String> ROOMS = Collections.unmodifiableList(Arrays.asList("cars", "dogs", "tapestry", "java"));
+	private static final int RECENT_MESSAGE_COUNT = 10;
 	
-	private final ConcurrentMap<String, Set<String>> usersByRoom = new ConcurrentHashMap<String, Set<String>>();
+	private final ConcurrentMap<String, ChatRoom> chatRooms;
 	private final AtmosphereBroadcaster broadcaster;
 	
 	public ChatManagerImpl(AtmosphereBroadcaster broadcaster) {
 		super();
 		this.broadcaster = broadcaster;
+		this.chatRooms = new ConcurrentHashMap<String, ChatRoom>();
+		for (String room : ROOMS) {
+			chatRooms.put(room, new ChatRoom());
+		}
 	}
 
 	@Override
@@ -31,20 +37,12 @@ public class ChatManagerImpl implements ChatManager {
 
 	@Override
 	public Collection<String> getRoomUsers(String room) {
-		Set<String> roomUsers = usersByRoom.get(room);
-		return roomUsers == null ? Collections.<String> emptySet() : Collections.unmodifiableSet(roomUsers);
+		return Collections.unmodifiableSet(chatRooms.get(room).users);
 	}
 
 	@Override
 	public void joinRoom(String room, String user) {
-		Set<String> roomUsers = usersByRoom.get(room);
-		if (roomUsers == null) {
-			roomUsers = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-			Set<String> existing = usersByRoom.putIfAbsent(room, roomUsers);
-			if (existing != null) {
-				roomUsers = existing;
-			}
-		}
+		Set<String> roomUsers = chatRooms.get(room).users;
 		boolean added = roomUsers.add(user);
 		if (added) {
 			// broadcast an update for the room users
@@ -58,18 +56,16 @@ public class ChatManagerImpl implements ChatManager {
 
 	@Override
 	public void leaveRoom(String room, String user) {
-		Set<String> roomUsers = usersByRoom.get(room);
-		if (roomUsers != null) {
-			boolean removed = roomUsers.remove(user);
+		Set<String> roomUsers = chatRooms.get(room).users;
+		boolean removed = roomUsers.remove(user);
+		
+		if (removed) {
+			// broadcast an update for the room users
+			String topic = String.format("rooms/%s/users", room);
+			broadcaster.broadcast(topic, new TreeSet<String>(roomUsers));
 			
-			if (removed) {
-				// broadcast an update for the room users
-				String topic = String.format("rooms/%s/users", room);
-				broadcaster.broadcast(topic, new TreeSet<String>(roomUsers));
-				
-				// send a message for user joining
-				sendRoomMessage(room, ADMINISTRATOR, user + " left the chat room");
-			}
+			// send a message for user joining
+			sendRoomMessage(room, ADMINISTRATOR, user + " left the chat room");
 		}
 	}
 
@@ -78,6 +74,12 @@ public class ChatManagerImpl implements ChatManager {
 		String topic = String.format("rooms/%s/messages", room);
 		ChatMessage chatMessage = new ChatMessage(user, message);
 		broadcaster.broadcast(topic, chatMessage);
+		
+		List<ChatMessage> recentMessages = chatRooms.get(room).recentMessages;
+		recentMessages.add(chatMessage);
+		if (recentMessages.size() > RECENT_MESSAGE_COUNT) {
+			recentMessages.remove(0);
+		}
 	}
 
 	@Override
@@ -85,5 +87,15 @@ public class ChatManagerImpl implements ChatManager {
 		String topic = String.format("users/%s/messages", toUser);
 		ChatMessage chatMessage = new ChatMessage(fromUser, message);
 		broadcaster.broadcast(topic, chatMessage);
+	}
+	
+	@Override
+	public List<ChatMessage> getRecentMessages(String room) {
+		return Collections.unmodifiableList(chatRooms.get(room).recentMessages);
+	}
+	
+	static final class ChatRoom {
+		Set<String> users = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+		List<ChatMessage> recentMessages = Collections.synchronizedList(new LinkedList<ChatMessage>());
 	}
 }

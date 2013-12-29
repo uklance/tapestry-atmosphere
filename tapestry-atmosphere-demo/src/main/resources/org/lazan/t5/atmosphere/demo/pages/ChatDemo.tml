@@ -4,11 +4,13 @@
     
     <t:if test="!loggedIn">
     	<t:form t:id="loginForm">
+    		<t:errors />
+    		
     		<t:label for="user">User</t:label>
-    		<t:textfield t:id="user" />
+    		<t:textfield t:id="user" validate="required" />
     		
     		<t:label for="room">Room</t:label>
-    		<t:select t:id="room" model="rooms" />
+    		<t:select t:id="room" model="rooms" validate="required" />
     		
     		<br />
     		<input type="submit" value="login" />
@@ -47,8 +49,11 @@
 	    		topics="prop:messageTopics"
 	    		event="chatMessage"
 	    		update="append" 
-	    	/>
-	    	
+	    	>
+	    		<t:loop source="recentMessages" value="chatMessage">
+	    			<t:delegate to="block:messageBlock" />
+	    		</t:loop> 
+	    	</t:atmos.pushTarget>
 	    	<t:zone t:id="chatFormZone">
 		    	<t:form zone="^" t:id="chatForm">
 		    		<t:label for="outMessage">Message</t:label>

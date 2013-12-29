@@ -2,6 +2,7 @@ package org.lazan.t5.atmosphere.demo.pages;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.tapestry5.Block;
@@ -80,7 +81,7 @@ public class ChatDemo {
 	}
 	
 	public boolean isLoggedIn() {
-		return user != null;
+		return user != null && room != null;
 	}
 	
 	public Block onUsersChange(Set<String> users) {
@@ -110,5 +111,9 @@ public class ChatDemo {
 			String.format("rooms/%s/messages", room),
 			String.format("users/%s/messages", user)
 		);
+	}
+	
+	public List<ChatMessage> getRecentMessages() {
+		return chatManager.getRecentMessages(room);
 	}
 }

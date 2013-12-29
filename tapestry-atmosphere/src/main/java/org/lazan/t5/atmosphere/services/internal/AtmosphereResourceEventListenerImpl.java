@@ -18,19 +18,19 @@ public class AtmosphereResourceEventListenerImpl implements AtmosphereResourceEv
 
 	@Override
 	public void onSuspend(AtmosphereResourceEvent event) {
-		logger.debug("onSuspend(%s)", event.getResource().uuid());
+		logger.debug("onSuspend({})", event.getResource().uuid());
 		sessionManager.createSession(event.getResource());
 	}
 
 	@Override
 	public void onDisconnect(AtmosphereResourceEvent event) {
-		logger.debug("debug(%s)", event.getResource().uuid());
+		logger.debug("onDisconnect({})", event.getResource().uuid());
 		sessionManager.destroySession(event.getResource());
 	}
 
 	@Override
 	public void onClose(AtmosphereResourceEvent event) {
-		logger.debug("onClose(%s)", event.getResource().uuid());
+		logger.debug("onClose({})", event.getResource().uuid());
 		sessionManager.destroySession(event.getResource());
 	}
 
