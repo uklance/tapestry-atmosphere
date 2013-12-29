@@ -67,7 +67,7 @@ public class AtmosphereHandlerImpl implements AtmosphereHandler {
 				response.getWriter().flush();
 			}
 		} else if (!event.isResuming()) {
-			logger.warn("Not resuming {}", event.getResource().uuid());
+			logger.debug("Not resuming {}", event.getResource().uuid());
 		}
 	}
 	

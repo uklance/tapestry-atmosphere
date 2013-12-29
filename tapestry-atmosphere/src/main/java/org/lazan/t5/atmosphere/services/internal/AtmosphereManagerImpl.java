@@ -19,21 +19,27 @@ import org.lazan.t5.atmosphere.model.ContainerClientModel;
 import org.lazan.t5.atmosphere.model.PushTargetClientModel;
 import org.lazan.t5.atmosphere.services.AtmosphereManager;
 import org.lazan.t5.atmosphere.services.AtmosphereSessionManager;
+import org.lazan.t5.atmosphere.services.TopicAuthorizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AtmosphereManagerImpl implements AtmosphereManager {
+	private static final Logger logger = LoggerFactory.getLogger(AtmosphereManagerImpl.class);
 	private static final EventContext EMPTY_EVENT_CONTEXT = new EmptyEventContext();
 	private static final String ATTRIBUTE_CONTAINER_CLIENT_MODEL = AtmosphereManager.class.getName() + ".ContainerClientModel";
 	
 	private final BroadcasterFactory broadcasterFactory;
 	private final TypeCoercer typeCoercer;
 	private final AtmosphereSessionManager sessionManager;
+	private final TopicAuthorizer topicAuthorizer;
 	
 	public AtmosphereManagerImpl(BroadcasterFactory broadcasterFactory, TypeCoercer typeCoercer,
-			AtmosphereSessionManager sessionManager) {
+			AtmosphereSessionManager sessionManager, TopicAuthorizer topicAuthorizer) {
 		super();
 		this.broadcasterFactory = broadcasterFactory;
 		this.typeCoercer = typeCoercer;
 		this.sessionManager = sessionManager;
+		this.topicAuthorizer = topicAuthorizer;
 	}
 
 	@Override
@@ -51,8 +57,12 @@ public class AtmosphereManagerImpl implements AtmosphereManager {
 	
 	protected void register(AtmosphereResource resource, Collection<String> topics) {
 		for (String topic : topics) {
-			Broadcaster broadcaster = broadcasterFactory.lookup(topic, true);
-			broadcaster.addAtmosphereResource(resource);
+			if (topicAuthorizer.isAuthorized(resource, topic)) {
+				Broadcaster broadcaster = broadcasterFactory.lookup(topic, true);
+				broadcaster.addAtmosphereResource(resource);
+			} else {
+				logger.error("Unauthorized topic {} for uuid {}", topic, resource.uuid());
+			}
 		}
 	}
 
