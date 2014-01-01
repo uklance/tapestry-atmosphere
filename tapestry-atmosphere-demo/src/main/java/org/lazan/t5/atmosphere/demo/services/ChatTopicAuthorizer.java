@@ -7,7 +7,6 @@ import org.lazan.t5.atmosphere.services.TopicAuthorizer;
 
 public class ChatTopicAuthorizer implements TopicAuthorizer {
 	public boolean isAuthorized(AtmosphereResource resource, String topic) {
-		System.out.println(String.format("### isAuthorised(%s)", topic));
 		HttpSession session = resource.getRequest().getSession(false);
 		if (session != null) {
 			String chatUser = (String) session.getAttribute("CHAT_USER");

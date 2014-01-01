@@ -20,11 +20,11 @@ import org.lazan.t5.atmosphere.services.internal.AtmosphereHttpServletRequestFil
 import org.lazan.t5.atmosphere.services.internal.AtmosphereManagerImpl;
 import org.lazan.t5.atmosphere.services.internal.AtmosphereResourceEventListenerImpl;
 import org.lazan.t5.atmosphere.services.internal.AtmosphereSessionManagerImpl;
-import org.lazan.t5.atmosphere.services.internal.NoopTopicAuthorizer;
-import org.lazan.t5.atmosphere.services.internal.NoopTopicListener;
 import org.lazan.t5.atmosphere.services.internal.PageGlobalsComponentRequestFilter;
 import org.lazan.t5.atmosphere.services.internal.PageGlobalsImpl;
 import org.lazan.t5.atmosphere.services.internal.PerRequestBroadcastFilterImpl;
+import org.lazan.t5.atmosphere.services.internal.TopicAuthorizerImpl;
+import org.lazan.t5.atmosphere.services.internal.TopicListenerImpl;
 import org.slf4j.Logger;
 
 public class AtmosphereModule {
@@ -36,8 +36,8 @@ public class AtmosphereModule {
 		binder.bind(AtmosphereResourceEventListener.class, AtmosphereResourceEventListenerImpl.class);
 		binder.bind(AtmosphereSessionManager.class, AtmosphereSessionManagerImpl.class);
 		binder.bind(AtmosphereBroadcaster.class, AtmosphereBroadcasterImpl.class);
-		binder.bind(TopicAuthorizer.class, NoopTopicAuthorizer.class);
-		binder.bind(TopicListener.class, NoopTopicListener.class);
+		binder.bind(TopicAuthorizer.class, TopicAuthorizerImpl.class);
+		binder.bind(TopicListener.class, TopicListenerImpl.class);
 
 		// note that the concrete class is required here
 		binder.bind(PerRequestBroadcastFilterImpl.class, PerRequestBroadcastFilterImpl.class);
