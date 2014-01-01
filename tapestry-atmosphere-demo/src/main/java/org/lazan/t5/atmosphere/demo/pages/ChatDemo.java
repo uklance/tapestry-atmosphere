@@ -64,6 +64,7 @@ public class ChatDemo {
 	
 	Object onSuccessFromChatForm() {
 		chatManager.sendRoomMessage(room, user, outMessage);
+		this.outMessage = null;
 		return chatFormZone.getBody();
 	}
 	

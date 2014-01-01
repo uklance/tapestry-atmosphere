@@ -2,13 +2,12 @@ package org.lazan.t5.atmosphere.services.internal;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpSession;
-
 import org.apache.tapestry5.json.JSONObject;
 import org.atmosphere.cpr.ApplicationConfig;
 import org.atmosphere.cpr.AtmosphereHandler;
 import org.atmosphere.cpr.AtmosphereRequest;
 import org.atmosphere.cpr.AtmosphereResource;
+import org.atmosphere.cpr.AtmosphereResource.TRANSPORT;
 import org.atmosphere.cpr.AtmosphereResourceEvent;
 import org.atmosphere.cpr.AtmosphereResourceEventListener;
 import org.atmosphere.cpr.AtmosphereResourceFactory;
@@ -36,9 +35,14 @@ public class AtmosphereHandlerImpl implements AtmosphereHandler {
 		AtmosphereRequest request = resource.getRequest();
 		String method = request.getMethod();
 		if ("GET".equals(method)) {
+			if (resource.transport() == TRANSPORT.LONG_POLLING || resource.transport() == TRANSPORT.JSONP) {
+				resource.resumeOnBroadcast();
+			}
 			resource.addEventListener(resourceEventListener);
 			// suspend the connect request
 			resource.suspend();
+			
+			manager.initializeIfSubsequentRequest(resource);
 		} else if ("POST".equals(method)) {
 			String jsonData = request.getReader().readLine().trim();
 			JSONObject data = new JSONObject(jsonData);
@@ -47,7 +51,7 @@ public class AtmosphereHandlerImpl implements AtmosphereHandler {
 			String uuid = (String) request.getAttribute(ApplicationConfig.SUSPENDED_ATMOSPHERE_RESOURCE_UUID);
 			AtmosphereResource suspendedResource = resourceFactory.find(uuid);
 
-			manager.initContainerClientModel(suspendedResource, data);
+			manager.initialize(suspendedResource, data);
 		}
 	}
 

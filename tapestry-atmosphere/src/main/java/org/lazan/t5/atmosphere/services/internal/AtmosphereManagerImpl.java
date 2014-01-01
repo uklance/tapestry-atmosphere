@@ -46,16 +46,23 @@ public class AtmosphereManagerImpl implements AtmosphereManager {
 	}
 
 	@Override
-	public ContainerClientModel initContainerClientModel(AtmosphereResource resource, JSONObject data) {
+	public void initialize(AtmosphereResource resource, JSONObject data) {
 		ContainerClientModel containerModel = createContainerClientModel(data);
-		sessionManager.setAttribute(resource, ATTRIBUTE_CONTAINER_CLIENT_MODEL, containerModel);
 		register(resource, containerModel.getTopics());
-		return containerModel;
+		sessionManager.setAttribute(resource, ATTRIBUTE_CONTAINER_CLIENT_MODEL, containerModel);
 	}
 	
 	@Override
 	public ContainerClientModel getContainerClientModel(AtmosphereResource resource) {
 		return sessionManager.getAttribute(resource, ATTRIBUTE_CONTAINER_CLIENT_MODEL, ContainerClientModel.class);
+	}
+	
+	@Override
+	public void initializeIfSubsequentRequest(AtmosphereResource resource) {
+		ContainerClientModel containerModel = getContainerClientModel(resource);
+		if (containerModel != null) {
+			register(resource, containerModel.getTopics());
+		}
 	}
 	
 	protected void register(AtmosphereResource resource, Collection<String> topics) {

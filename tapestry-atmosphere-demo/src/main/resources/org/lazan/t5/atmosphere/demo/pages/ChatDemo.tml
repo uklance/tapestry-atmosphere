@@ -18,7 +18,7 @@
     	</t:form>
     </t:if>
     <t:if test="loggedIn">
-	    <t:atmos.container>
+	    <t:atmos.container transport="websocket" fallbackTransport="long-polling">
 		    <div class="row-fluid">
 		    	<div class="span5">
 			    	<h4>Logged in as &quot;${user}&quot;, in room &quot;${room}&quot;</h4>

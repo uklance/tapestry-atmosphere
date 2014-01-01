@@ -5,6 +5,7 @@ import org.atmosphere.cpr.AtmosphereResource;
 import org.lazan.t5.atmosphere.model.ContainerClientModel;
 
 public interface AtmosphereManager {
-	ContainerClientModel initContainerClientModel(AtmosphereResource resource, JSONObject data);
+	void initialize(AtmosphereResource resource, JSONObject data);
 	ContainerClientModel getContainerClientModel(AtmosphereResource resource);
+	void initializeIfSubsequentRequest(AtmosphereResource resource);
 }
