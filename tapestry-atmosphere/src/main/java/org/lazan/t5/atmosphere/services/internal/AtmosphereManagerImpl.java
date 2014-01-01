@@ -48,8 +48,20 @@ public class AtmosphereManagerImpl implements AtmosphereManager {
 	@Override
 	public void initialize(AtmosphereResource resource, JSONObject data) {
 		ContainerClientModel containerModel = createContainerClientModel(data);
-		register(resource, containerModel.getTopics());
-		sessionManager.setAttribute(resource, ATTRIBUTE_CONTAINER_CLIENT_MODEL, containerModel);
+		Set<String> topics = containerModel.getTopics();
+		boolean valid = true;
+		for (String topic : topics) {
+			if (!topicAuthorizer.isAuthorized(resource, topic)) {
+				logger.error("Unauthorized topic {} for uuid {}", topic, resource.uuid());
+				valid = false;
+			}
+		}
+		if (valid) {
+			register(resource, topics, true);
+	
+			sessionManager.createSession(resource);
+			sessionManager.setAttribute(resource, ATTRIBUTE_CONTAINER_CLIENT_MODEL, containerModel);
+		}
 	}
 	
 	@Override
@@ -59,21 +71,21 @@ public class AtmosphereManagerImpl implements AtmosphereManager {
 	
 	@Override
 	public void initializeIfSubsequentRequest(AtmosphereResource resource) {
-		ContainerClientModel containerModel = getContainerClientModel(resource);
-		if (containerModel != null) {
-			register(resource, containerModel.getTopics());
+		if (sessionManager.isSessionInitialized(resource)) {
+			ContainerClientModel containerModel = getContainerClientModel(resource);
+			if (containerModel != null) {
+				register(resource, containerModel.getTopics(), false);
+			}
 		}
 	}
 	
-	protected void register(AtmosphereResource resource, Collection<String> topics) {
+	protected void register(AtmosphereResource resource, Collection<String> topics, boolean isFirst) {
 		for (String topic : topics) {
-			if (topicAuthorizer.isAuthorized(resource, topic)) {
-				Broadcaster broadcaster = broadcasterFactory.lookup(topic, true);
-				broadcaster.addAtmosphereResource(resource);
-				
+			Broadcaster broadcaster = broadcasterFactory.lookup(topic, true);
+			broadcaster.addAtmosphereResource(resource);
+			
+			if (isFirst) {
 				topicListener.onConnect(resource, topic);
-			} else {
-				logger.error("Unauthorized topic {} for uuid {}", topic, resource.uuid());
 			}
 		}
 	}

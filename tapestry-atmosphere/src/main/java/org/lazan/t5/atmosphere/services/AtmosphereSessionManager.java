@@ -11,4 +11,5 @@ public interface AtmosphereSessionManager {
 	<T> T getAttribute(AtmosphereResource resource, String key, Class<T> type);
 	void createSession(AtmosphereResource resource);
 	void destroySession(AtmosphereResource resource);
+	boolean isSessionInitialized(AtmosphereResource resource);
 }

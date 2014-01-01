@@ -49,6 +49,12 @@ public class AtmosphereSessionManagerImpl implements AtmosphereSessionManager {
 	}
 	
 	@Override
+	public boolean isSessionInitialized(AtmosphereResource resource) {
+		ConcurrentMap<String, Object> session = sessionsByUuid.get(resource.uuid());
+		return session != null;
+	}
+	
+	@Override
 	public void setAttribute(AtmosphereResource resource, String key, Object value) {
 		getSession(resource).put(key, value);
 	}

@@ -19,6 +19,7 @@ public class ChatTopicListener implements TopicListener {
 	
 	@Override
 	public void onConnect(AtmosphereResource resource, String topic) {
+		System.out.println(String.format("### onConnect(%s)", topic));
 	}
 	
 	@Override

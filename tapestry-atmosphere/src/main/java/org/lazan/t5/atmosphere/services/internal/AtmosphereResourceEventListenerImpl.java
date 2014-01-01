@@ -26,12 +26,6 @@ public class AtmosphereResourceEventListenerImpl extends AtmosphereResourceEvent
 	}
 
 	@Override
-	public void onSuspend(AtmosphereResourceEvent event) {
-		logger.debug("onSuspend({})", event.getResource().uuid());
-		sessionManager.createSession(event.getResource());
-	}
-
-	@Override
 	public void onDisconnect(AtmosphereResourceEvent event) {
 		AtmosphereResource resource = event.getResource();
 		logger.debug("onDisconnect({})", resource.uuid());

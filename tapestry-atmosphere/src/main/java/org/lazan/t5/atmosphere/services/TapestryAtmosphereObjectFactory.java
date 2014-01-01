@@ -1,5 +1,9 @@
 package org.lazan.t5.atmosphere.services;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.servlet.ServletContext;
 
 import org.apache.tapestry5.TapestryFilter;
@@ -16,31 +20,35 @@ import org.slf4j.LoggerFactory;
 public class TapestryAtmosphereObjectFactory implements AtmosphereObjectFactory {
 	private static final AtmosphereObjectFactory FALLBACK_OBJECT_FACTORY = new DefaultAtmosphereObjectFactory();
 	private static final Logger logger = LoggerFactory.getLogger(TapestryAtmosphereObjectFactory.class);
+	private final Set<Class<?>> registryMisses = Collections.newSetFromMap(new ConcurrentHashMap<Class<?>, Boolean>());
 
 	@Override
 	public <T> T newClassInstance(AtmosphereFramework framework, Class<T> type) throws InstantiationException,
 			IllegalAccessException
 	{
-		Registry registry = getRegistry(framework);
+		if (!registryMisses.contains(type)) {
+			Registry registry = getRegistry(framework);
 		
-		try {
-			// attempt service lookup
-			T service = registry.getService(type);
-			logger.debug("Found {} in tapestry registry", type.getSimpleName());
-			return service;
-		} catch (RuntimeException e) {
-			// fallback to default
-			logger.debug("Falling back to default lookup for {}", type.getSimpleName());
-			return FALLBACK_OBJECT_FACTORY.newClassInstance(framework, type);
+			try {
+				// attempt service lookup
+				T service = registry.getService(type);
+				logger.debug("Found {} in tapestry registry", type.getSimpleName());
+				return service;
+			} catch (RuntimeException e) {
+				// never try this type again
+				registryMisses.add(type);
+			}
 		}
+		// fallback to default
+		logger.debug("Falling back to default lookup for {}", type.getSimpleName());
+		return FALLBACK_OBJECT_FACTORY.newClassInstance(framework, type);
 	}
 	
 	protected Registry getRegistry(AtmosphereFramework framework) {
 		ServletContext servletContext = framework.getServletContext();
 		Registry registry = (Registry) servletContext.getAttribute(TapestryFilter.REGISTRY_CONTEXT_NAME);
 		if (registry == null) {
-			throw new IllegalStateException(
-					"Tapestry registry does not exist. Try configuring the atmosphere servlet to have a load-on-startup value greater than tapestry's in web.xml");
+			throw new IllegalStateException("Tapestry registry not found in ServletContext");
 		}
 		return registry;
 	}	
