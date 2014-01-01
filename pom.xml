@@ -11,7 +11,5 @@
 	<modules>
 		<module>tapestry-atmosphere</module>       
 		<module>tapestry-atmosphere-demo</module>
-		<module>tapestry-atmosphere-demo-tomcat6</module>
-		<module>tapestry-atmosphere-demo-tomcat7</module>
 	</modules>       
 </project>
