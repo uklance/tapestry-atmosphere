@@ -67,7 +67,7 @@ public class AtmosphereModule {
 			OrderedConfiguration<HttpServletRequestFilter> configuration,
 			AtmosphereHttpServletRequestFilter atmosphereFilter)
 	{
-		configuration.add("atmosphere", atmosphereFilter);
+		configuration.add("atmosphere", atmosphereFilter, "before:GZIP");
 	}	
 
 	public static void contributeComponentClassResolver(Configuration<LibraryMapping> configuration, Logger log) {
