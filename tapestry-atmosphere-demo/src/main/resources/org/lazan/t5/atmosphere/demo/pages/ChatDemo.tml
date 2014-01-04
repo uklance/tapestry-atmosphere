@@ -72,7 +72,9 @@
 		</t:atmos.container>
     </t:if>
     <t:block t:id="messageBlock">
-    	<strong>${chatMessage.fromUser}:</strong>${chatMessage.message}<br />
+    	<t:output format="timeFormat" value="chatMessage.time" />
+    	<span class="label" style="background-color: ${userColor(chatMessage.fromUser)}">${chatMessage.fromUser}</span>
+    	${chatMessage.message}<br />
     </t:block>
     <t:block t:id="usersBlock">
    		<ul>
@@ -90,6 +92,8 @@
 		<t:stitch.codeTab source="classpath:org/lazan/t5/atmosphere/demo/services/ChatManagerImpl.java" />
 		<t:stitch.codeTab source="classpath:org/lazan/t5/atmosphere/demo/services/ChatTopicAuthorizer.java" />
 		<t:stitch.codeTab source="classpath:org/lazan/t5/atmosphere/demo/services/ChatTopicListener.java" />
+		<t:stitch.codeTab source="classpath:org/lazan/t5/atmosphere/demo/services/ChatHttpSessionListener.java" />
 		<t:stitch.codeTab source="classpath:org/lazan/t5/atmosphere/demo/services/AppModule.java" />
+		<t:stitch.codeTab source="classpath:WEB-INF/web.xml" />
 	</t:stitch.tabGroup>
 </t:layout>

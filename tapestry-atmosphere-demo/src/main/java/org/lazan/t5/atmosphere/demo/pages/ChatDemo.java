@@ -1,9 +1,13 @@
 package org.lazan.t5.atmosphere.demo.pages;
 
+import java.text.DateFormat;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.tapestry5.Block;
 import org.apache.tapestry5.annotations.InjectComponent;
@@ -13,6 +17,7 @@ import org.apache.tapestry5.annotations.SessionAttribute;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.lazan.t5.atmosphere.demo.model.ChatMessage;
+import org.lazan.t5.atmosphere.demo.services.ChatConstants;
 import org.lazan.t5.atmosphere.demo.services.ChatManager;
 
 public class ChatDemo {
@@ -20,7 +25,7 @@ public class ChatDemo {
 	@PageActivationContext
 	private String room;
 
-	@SessionAttribute("CHAT_USER")
+	@SessionAttribute(ChatConstants.CHAT_USER_SESSION_KEY)
 	@Property
 	private String user;
 	
@@ -116,5 +121,20 @@ public class ChatDemo {
 	
 	public List<ChatMessage> getRecentMessages() {
 		return chatManager.getRecentMessages(room);
+	}
+	
+	public Format getTimeFormat() {
+		DateFormat format = new SimpleDateFormat("HH:mm");
+		format.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return format;
+	}
+	
+	public String userColor(String user) {
+		int remainder = Math.abs(user.hashCode()) % (256 * 256 * 256);
+		String hex = Integer.toHexString(remainder);
+		for (int i = hex.length(); i < 6; ++i) {
+			hex = "0" + hex;
+		}
+		return "#" + hex;
 	}
 }

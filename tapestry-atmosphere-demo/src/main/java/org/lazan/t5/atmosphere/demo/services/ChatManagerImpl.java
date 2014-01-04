@@ -15,7 +15,7 @@ import org.lazan.t5.atmosphere.services.AtmosphereBroadcaster;
 
 public class ChatManagerImpl implements ChatManager {
 	private final String ADMINISTRATOR = "admin";
-	private static final List<String> ROOMS = Collections.unmodifiableList(Arrays.asList("cars", "dogs", "tapestry", "java"));
+	private static final List<String> ROOMS = Collections.unmodifiableList(Arrays.asList("cars", "cats", "dogs", "java", "tapestry"));
 	private static final int RECENT_MESSAGE_COUNT = 10;
 	
 	private final ConcurrentMap<String, ChatRoom> chatRooms;
@@ -37,7 +37,7 @@ public class ChatManagerImpl implements ChatManager {
 
 	@Override
 	public Collection<String> getRoomUsers(String room) {
-		return Collections.unmodifiableSet(chatRooms.get(room).users);
+		return new TreeSet<String>(chatRooms.get(room).users);
 	}
 
 	@Override
@@ -66,6 +66,13 @@ public class ChatManagerImpl implements ChatManager {
 			
 			// send a message for user joining
 			sendRoomMessage(room, ADMINISTRATOR, user + " left the chat room");
+		}
+	}
+	
+	@Override
+	public void leaveAllRooms(String user) {
+		for (String room : getRooms()) {
+			leaveRoom(room, user);
 		}
 	}
 

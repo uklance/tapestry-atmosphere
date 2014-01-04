@@ -13,4 +13,5 @@ public interface ChatManager {
 	void sendRoomMessage(String room, String user, String message);
 	void sendPrivateMessage(String fromUser, String toUser, String message);
 	List<ChatMessage> getRecentMessages(String room);
+	void leaveAllRooms(String chatUser);
 }

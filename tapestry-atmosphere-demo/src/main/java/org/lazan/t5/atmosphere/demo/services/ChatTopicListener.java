@@ -27,7 +27,7 @@ public class ChatTopicListener implements TopicListener {
 		if (matcher.matches()) {
 			HttpSession session = resource.getRequest().getSession(false);
 			if (session != null) {
-				String chatUser = (String) session.getAttribute("CHAT_USER");
+				String chatUser = (String) session.getAttribute(ChatConstants.CHAT_USER_SESSION_KEY);
 				if (chatUser != null) {
 					String room = matcher.group(1);
 					chatManager.leaveRoom(room, chatUser);

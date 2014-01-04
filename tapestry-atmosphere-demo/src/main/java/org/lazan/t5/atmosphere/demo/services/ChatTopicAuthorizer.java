@@ -9,7 +9,7 @@ public class ChatTopicAuthorizer implements TopicAuthorizer {
 	public boolean isAuthorized(AtmosphereResource resource, String topic) {
 		HttpSession session = resource.getRequest().getSession(false);
 		if (session != null) {
-			String chatUser = (String) session.getAttribute("CHAT_USER");
+			String chatUser = (String) session.getAttribute(ChatConstants.CHAT_USER_SESSION_KEY);
 			return chatUser != null;
 		}
 		return false;
