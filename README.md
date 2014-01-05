@@ -16,7 +16,7 @@ See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
 - [Supported Browsers / Servers](https://github.com/Atmosphere/atmosphere/wiki/Supported-WebServers-and-Browsers)
 - [Topic Authorizer](https://github.com/uklance/tapestry-atmosphere/wiki/Topic-Authorizer)
 - [Topic Listener](https://github.com/uklance/tapestry-atmosphere/wiki/Topic-Listener)
-- Servlet Configuration
+- Configuring the Atmosphere Servlet
 - HttpSession
 - Tomcat / JBOSS
 - Apache
