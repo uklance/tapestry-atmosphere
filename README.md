@@ -8,35 +8,18 @@ to write a single line of javascript or concern themselves with the underlying A
 
 See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
 
-### Tapestry Components
+### Topics
 
-#### Container
-
-##### Client Configuration
-
-#### PushTarget
-
-### Supported Browsers / Servers
-
-See the supported list of browsers and servers [here](https://github.com/Atmosphere/atmosphere/wiki/Supported-WebServers-and-Browsers)
-
-### TopicAuthorizer
-
-### TopicListener
-
-### Maven
-
-#### Other
-
-### Servlet Configuration
-
-### HttpSession
-
-### TapestryAtmosphereObjectFactory
-
-### web.xml
-
-### Tomcat / JBOSS
-
-### Apache
+- [Container component](https://github.com/uklance/tapestry-atmosphere/wiki/Container-Component)
+- PushTarget component
+- Supported Browsers / Servers - See the supported list of browsers and servers [here](https://github.com/Atmosphere/atmosphere/wiki/Supported-WebServers-and-Browsers)
+- TopicAuthorizer
+- TopicListener
+- Maven
+- Servlet Configuration
+- HttpSession
+- TapestryAtmosphereObjectFactory
+- web.xml
+- Tomcat / JBOSS
+- Apache
 
