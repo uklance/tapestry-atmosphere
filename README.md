@@ -16,11 +16,36 @@ See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
 - [Supported Browsers / Servers](https://github.com/Atmosphere/atmosphere/wiki/Supported-WebServers-and-Browsers)
 - [Topic Authorizer](https://github.com/uklance/tapestry-atmosphere/wiki/Topic-Authorizer)
 - [Topic Listener](https://github.com/uklance/tapestry-atmosphere/wiki/Topic-Listener)
-- Maven
 - Servlet Configuration
 - HttpSession
 - TapestryAtmosphereObjectFactory
 - web.xml
 - Tomcat / JBOSS
 - Apache
+
+### Maven
+
+```xml
+<dependencies>
+   <dependency>
+      <groupId>org.lazan</groupId>
+      <artifactId>tapestry-atmosphere</artifactId>
+      <!-- 
+         lookup latest version at 
+         https://github.com/uklance/releases/tree/master/org/lazan/tapestry-atmosphere
+      -->
+      <version>...</version> 
+   </dependency>
+</dependencies>
+
+...
+
+<repositories>
+   <repository>
+      <id>lazan-releases</id>
+      <url>https://github.com/uklance/releases/raw/master</url>
+   </repository>
+</repositories>
+```
+
 
