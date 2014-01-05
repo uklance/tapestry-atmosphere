@@ -15,7 +15,7 @@ See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
 - [Atmosphere Broadcaster](https://github.com/uklance/tapestry-atmosphere/wiki/Atmosphere-Broadcaster)
 - [Supported Browsers / Servers](https://github.com/Atmosphere/atmosphere/wiki/Supported-WebServers-and-Browsers)
 - [Topic Authorizer](https://github.com/uklance/tapestry-atmosphere/wiki/Topic-Authorizer)
-- TopicListener
+- [Topic Listener](https://github.com/uklance/tapestry-atmosphere/wiki/Topic-Listener)
 - Maven
 - Servlet Configuration
 - HttpSession
