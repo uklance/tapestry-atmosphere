@@ -14,7 +14,7 @@ See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
 - [PushTarget component](https://github.com/uklance/tapestry-atmosphere/wiki/PushTarget-Component)
 - [Atmosphere Broadcaster](https://github.com/uklance/tapestry-atmosphere/wiki/Atmosphere-Broadcaster)
 - [Supported Browsers / Servers](https://github.com/Atmosphere/atmosphere/wiki/Supported-WebServers-and-Browsers)
-- TopicAuthorizer
+- [Topic Authorizer](https://github.com/uklance/tapestry-atmosphere/wiki/Topic-Authorizer)
 - TopicListener
 - Maven
 - Servlet Configuration
