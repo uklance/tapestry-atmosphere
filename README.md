@@ -11,7 +11,8 @@ See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
 ### Topics
 
 - [Container component](https://github.com/uklance/tapestry-atmosphere/wiki/Container-Component)
-- PushTarget component
+- [PushTarget component](https://github.com/uklance/tapestry-atmosphere/wiki/PushTarget-Component)
+- AtmosphereBroadcaster
 - Supported Browsers / Servers - See the supported list of browsers and servers [here](https://github.com/Atmosphere/atmosphere/wiki/Supported-WebServers-and-Browsers)
 - TopicAuthorizer
 - TopicListener
