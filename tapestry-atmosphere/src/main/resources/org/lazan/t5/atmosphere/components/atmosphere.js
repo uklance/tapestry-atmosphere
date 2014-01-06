@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013 Jeanfrancois Arcand
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,22 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * Highly inspired by Portal v1.0
- * http://github.com/flowersinthesand/portal
- *
- * Copyright 2011-2013, Donghwan Kim
- * Licensed under the Apache License, Version 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
- */
 /**
- * Official documentation of this library: https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API
+ * Atmosphere.js
+ * https://github.com/Atmosphere/atmosphere-javascript
+ * 
+ * API reference
+ * https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API
+ * 
+ * Highly inspired by 
+ * - Portal by Donghwan Kim http://flowersinthesand.github.io/portal/
  */
-(function () {
+(function(root, factory) {
+    if (typeof define === "function" && define.amd) {
+        // AMD
+        define(factory);
+    } else {
+        // Browser globals, Window
+        root.atmosphere = factory();
+    }
+}(this, function() {
 
     "use strict";
 
-    var version = "2.0.9-javascript",
+    var version = "2.1.2-javascript",
         atmosphere = {},
         guid,
         requests = [],
@@ -101,7 +108,7 @@
                 messageDelimiter: '|',
                 connectTimeout: -1,
                 reconnectInterval: 0,
-                dropAtmosphereHeaders: true,
+                dropHeaders: true,
                 uuid: 0,
                 async: true,
                 shared: false,
@@ -310,7 +317,7 @@
                     };
                     var closeR = new atmosphere.AtmosphereRequest(rq);
                     closeR.attachHeadersAsQueryString = false;
-                    closeR.dropAtmosphereHeaders = true;
+                    closeR.dropHeaders = true;
                     closeR.url = url;
                     closeR.contentType = "text/plain";
                     closeR.transport = 'polling';
@@ -461,7 +468,11 @@
                 _request.firstMessage = uuid == 0 ? true : false;
                 _request.isOpen = false;
                 _request.ctime = atmosphere.util.now();
-                _request.uuid = uuid;
+
+                // We carry any UUID set by the user or from a previous connection.
+                if (_request.uuid === 0) {
+                    _request.uuid = uuid;
+                }
                 _response.closedByClientTimeout = false;
 
                 if (_request.transport !== 'websocket' && _request.transport !== 'sse') {
@@ -1546,7 +1557,8 @@
                 }
 
                 if (rq.contentType !== '') {
-                    url += "&Content-Type=" + rq.contentType;
+                    //Eurk!
+                    url += "&Content-Type=" + rq.transport === 'websocket' ? rq.contentType : encodeURIComponent(rq.contentType);
                 }
 
                 if (rq.enableProtocol) {
@@ -1594,7 +1606,7 @@
                     return;
                 }
 
-                if (atmosphere.util.browser.msie && atmosphere.util.browser.version < 10) {
+                if (atmosphere.util.browser.msie && +atmosphere.util.browser.version.split(".")[0] < 10) {
                     if ((rq.transport === 'streaming')) {
                         if (rq.enableXDR && window.XDomainRequest) {
                             _ieXDR(rq);
@@ -1711,7 +1723,7 @@
                             if (atmosphere.util.trim(responseText).length === 0 && rq.transport === 'long-polling') {
                                 // For browser that aren't support onabort
                                 if (!ajaxRequest.hasData) {
-                                    reconnectF();
+                                    _reconnect(ajaxRequest, rq, 0);
                                 } else {
                                     ajaxRequest.hasData = false;
                                 }
@@ -1845,7 +1857,7 @@
                     }
                 }
 
-                if (!_request.dropAtmosphereHeaders) {
+                if (!_request.dropHeaders) {
                     ajaxRequest.setRequestHeader("X-Atmosphere-Framework", atmosphere.util.version);
                     ajaxRequest.setRequestHeader("X-Atmosphere-Transport", request.transport);
                     if (request.lastTimestamp != null) {
@@ -1858,18 +1870,18 @@
                         ajaxRequest.setRequestHeader("X-Atmosphere-TrackMessageSize", "true");
                     }
                     ajaxRequest.setRequestHeader("X-Atmosphere-tracking-id", request.uuid);
+
+                    atmosphere.util.each(request.headers, function (name, value) {
+                        var h = atmosphere.util.isFunction(value) ? value.call(this, ajaxRequest, request, create, _response) : value;
+                        if (h != null) {
+                            ajaxRequest.setRequestHeader(name, h);
+                        }
+                    });
                 }
 
                 if (request.contentType !== '') {
                     ajaxRequest.setRequestHeader("Content-Type", request.contentType);
                 }
-
-                atmosphere.util.each(request.headers, function (name, value) {
-                    var h = atmosphere.util.isFunction(value) ? value.call(this, ajaxRequest, request, create, _response) : value;
-                    if (h != null) {
-                        ajaxRequest.setRequestHeader(name, h);
-                    }
-                });
             }
 
             function _reconnect(ajaxRequest, request, reconnectInterval) {
@@ -2406,16 +2418,6 @@
                         if (tempUUID && tempUUID != null) {
                             request.uuid = tempUUID.split(" ").pop();
                         }
-
-                        // HOTFIX for firefox bug: https://bugzilla.mozilla.org/show_bug.cgi?id=608735
-                        if (request.headers) {
-                            atmosphere.util.each(_request.headers, function (name) {
-                                var v = xdr.getResponseHeader(name);
-                                if (v) {
-                                    _response.headers[name] = v;
-                                }
-                            });
-                        }
                     } catch (e) {
                     }
                 }
@@ -2599,6 +2601,9 @@
         if (typeof (callback) === 'function') {
             atmosphere.addCallback(callback);
         }
+
+        // https://github.com/Atmosphere/atmosphere-javascript/issues/58
+        uuid = 0;
 
         if (typeof (url) !== "string") {
             request = url;
@@ -3008,11 +3013,18 @@
                 /(webkit)[ \/]([\w.]+)/.exec(ua) ||
                 /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
                 /(msie) ([\w.]+)/.exec(ua) ||
+                /(trident)(?:.*? rv:([\w.]+)|)/.exec(ua) ||
                 ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua) ||
                 [];
 
         atmosphere.util.browser[match[1] || ""] = true;
         atmosphere.util.browser.version = match[2] || "0";
+        
+        // Trident is the layout engine of the Internet Explorer
+        // IE 11 has no "MSIE: 11.0" token
+        if (atmosphere.util.browser.trident) {
+            atmosphere.util.browser.msie = true;
+        }
 
         // The storage event of Internet Explorer and Firefox 3 works strangely
         if (atmosphere.util.browser.msie || (atmosphere.util.browser.mozilla && atmosphere.util.browser.version.split(".")[0] === "1")) {
@@ -3030,7 +3042,7 @@
     atmosphere.util.on(window, "keypress", function (event) {
         if (event.charCode === 27 || event.keyCode === 27) {
             if (event.preventDefault) {
-            	event.preventDefault();
+                event.preventDefault();
             }
         }
     });
@@ -3038,6 +3050,7 @@
     atmosphere.util.on(window, "offline", function () {
         atmosphere.unsubscribe();
     });
-    window.atmosphere = atmosphere;
-})();
+    
+    return atmosphere;
+}));
 /* jshint eqnull:true, noarg:true, noempty:true, eqeqeq:true, evil:true, laxbreak:true, undef:true, browser:true, indent:false, maxerr:50 */
