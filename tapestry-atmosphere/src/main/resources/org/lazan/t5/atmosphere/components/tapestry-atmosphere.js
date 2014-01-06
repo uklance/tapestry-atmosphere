@@ -13,7 +13,6 @@ T5.extendInitializers({
 		var request = options.connectOptions;
 
 		request.onOpen = function(response) {
-			console.log("onOpen: " + response);
 			var data = {
 				pushTargets: pushTargets, 
 				ac: options.ac,

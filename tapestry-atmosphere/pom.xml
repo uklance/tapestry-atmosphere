@@ -17,6 +17,7 @@
 			<groupId>org.atmosphere</groupId>
 			<artifactId>atmosphere-runtime</artifactId>
 			<version>2.1.0-RC2</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.lazan</groupId>

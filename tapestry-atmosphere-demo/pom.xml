@@ -54,5 +54,43 @@
 
 	<properties>
 		<servlet.version>2.5</servlet.version>
+		<atmosphere.version>2.1.0-RC2</atmosphere.version>
+		<atmosphere-compat.version>2.0.1</atmosphere-compat.version>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>jetty9</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.atmosphere</groupId>
+					<artifactId>atmosphere-runtime</artifactId>
+					<version>${atmosphere.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>tomcat7</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.atmosphere</groupId>
+					<artifactId>atmosphere-runtime-native</artifactId>
+					<version>${atmosphere.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>org.atmosphere</groupId>
+					<artifactId>atmosphere-compat-jbossweb</artifactId>
+					<version>${atmosphere-compat.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>org.atmosphere</groupId>
+					<artifactId>atmosphere-compat-tomcat</artifactId>
+					<version>${atmosphere-compat.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 </project>
