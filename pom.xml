@@ -4,12 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.lazan</groupId>
 	<artifactId>tapestry-atmosphere-modules</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>${project.artifactId}</name>
 
 	<modules>
 		<module>tapestry-atmosphere</module>       
 		<module>tapestry-atmosphere-demo</module>
+		<module>tapestry-atmosphere-demo-tomcat7</module>
 	</modules>       
 </project>
