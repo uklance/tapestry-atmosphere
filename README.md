@@ -8,7 +8,7 @@ to write a single line of javascript or concern themselves with the underlying A
 
 See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
 
-### Topics
+### Wiki Topics
 
 - [Container component](https://github.com/uklance/tapestry-atmosphere/wiki/Container-Component)
 - [PushTarget component](https://github.com/uklance/tapestry-atmosphere/wiki/PushTarget-Component)
