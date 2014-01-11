@@ -17,8 +17,7 @@ See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
 - [Topic Authorizer](https://github.com/uklance/tapestry-atmosphere/wiki/Topic-Authorizer)
 - [Topic Listener](https://github.com/uklance/tapestry-atmosphere/wiki/Topic-Listener)
 - [Configuring the Atmosphere Servlet](https://github.com/uklance/tapestry-atmosphere/wiki/Configuring-the-Atmosphere-Servlet)
-- HttpSession
-- Tomcat / JBOSS
+- [HttpSession Support](https://github.com/uklance/tapestry-atmosphere/wiki/HTTPSession-Support)
 - Apache
 
 ### Maven
