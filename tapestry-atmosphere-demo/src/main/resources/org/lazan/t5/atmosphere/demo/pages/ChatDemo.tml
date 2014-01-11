@@ -1,6 +1,7 @@
 <t:layout
     xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
-    xmlns:p="tapestry:parameter">
+    xmlns:p="tapestry:parameter"
+    xmlns:atmos="tapestry-library:atmos">
     
     <t:if test="!loggedIn">
     	<t:form t:id="loginForm">
@@ -18,7 +19,7 @@
     	</t:form>
     </t:if>
     <t:if test="loggedIn">
-	    <t:atmos.container transport="websocket" fallbackTransport="long-polling">
+	    <atmos:container transport="websocket" fallbackTransport="long-polling">
 		    <div class="row-fluid">
 		    	<div class="span5">
 			    	<h4>Logged in as &quot;${user}&quot;, in room &quot;${room}&quot;</h4>
@@ -33,7 +34,7 @@
 					</ul>
 					
 			    	Users in room ${room}:
-			    	<t:atmos.pushTarget
+			    	<atmos:pushTarget
 			    		topics="rooms/${room}/users" 
 			    		event="usersChange"
 			    		update="replace"
@@ -43,7 +44,7 @@
 				    			<li>${currentUser}</li>
 				    		</t:loop>
 				    	</ul>
-			    	</t:atmos.pushTarget>
+			    	</atmos:pushTarget>
 			    	<br />
 			    	<t:zone t:id="chatFormZone">
 				    	<t:form zone="^" t:id="chatForm">
@@ -57,7 +58,7 @@
 			    </div>
 			    <div class="span5">
 			    	<h4>Room Messages</h4>
-			    	<t:atmos.pushTarget
+			    	<atmos:pushTarget
 			    		topics="prop:messageTopics"
 			    		event="chatMessage"
 			    		update="append" 
@@ -66,10 +67,10 @@
 			    		<t:loop source="recentMessages" value="chatMessage">
 			    			<t:delegate to="block:messageBlock" />
 			    		</t:loop> 
-			    	</t:atmos.pushTarget>
+			    	</atmos:pushTarget>
 			    </div>
 			</div>
-		</t:atmos.container>
+		</atmos:container>
     </t:if>
     <t:block t:id="messageBlock">
     	<t:output format="timeFormat" value="chatMessage.time" />
