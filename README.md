@@ -18,7 +18,7 @@ See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
 - [Topic Listener](https://github.com/uklance/tapestry-atmosphere/wiki/Topic-Listener)
 - [Configuring the Atmosphere Servlet](https://github.com/uklance/tapestry-atmosphere/wiki/Configuring-the-Atmosphere-Servlet)
 - [HttpSession Support](https://github.com/uklance/tapestry-atmosphere/wiki/HTTPSession-Support)
-- [Apache Websocket Support](https://github.com/Atmosphere/atmosphere/wiki/How-to-run-Atmosphere-behind-Apache-WebServer)
+- [Apache Proxy](https://github.com/uklance/tapestry-atmosphere/wiki/Apache-Proxy)
 
 ### Maven
 
