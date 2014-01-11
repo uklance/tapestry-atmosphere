@@ -42,6 +42,7 @@ See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
    </repository>
 </repositories>
 ```
+See the [quick dependency reference](https://github.com/Atmosphere/atmosphere/wiki/Installing-AtmosphereServlet-with-or-without-native-support#quick-dependency-reference) to see which atmosphere jars are required for your web container.
 
 ### web.xml
 
