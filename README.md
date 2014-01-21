@@ -28,7 +28,7 @@ See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
       <groupId>org.lazan</groupId>
       <artifactId>tapestry-atmosphere</artifactId>
       <!--  lookup latest version at https://github.com/uklance/releases/tree/master/org/lazan/tapestry-atmosphere -->
-      <version>...</version> 
+      <version>?</version> 
    </dependency>
 </dependencies>
 <repositories>
