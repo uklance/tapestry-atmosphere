@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>org.lazan</groupId>
 			<artifactId>tapestry-offline</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

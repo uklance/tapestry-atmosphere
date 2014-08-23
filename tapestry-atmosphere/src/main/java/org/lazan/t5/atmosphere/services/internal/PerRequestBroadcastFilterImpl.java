@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.tapestry5.EventContext;
@@ -53,8 +55,8 @@ public class PerRequestBroadcastFilterImpl implements PerRequestBroadcastFilter 
 			ComponentEventRequestParameters params = createComponentEventRequestParams(containerModel, pushTarget, eventContext);
 
 			try {
-				JSONObject eventResult = offlineComponentRenderer.renderComponent(requestContext, params);
-				allResults.put(pushTarget.getClientId(), eventResult);
+				Future<JSONObject> future = offlineComponentRenderer.renderComponentEvent(requestContext, params);
+				allResults.put(pushTarget.getClientId(), future.get());
 			} catch (Exception e) {
 				logger.error("Error rendering " + params, e);
 			}
@@ -80,8 +82,10 @@ public class PerRequestBroadcastFilterImpl implements PerRequestBroadcastFilter 
 	
 	@SuppressWarnings("unchecked")
 	protected OfflineRequestContext createOfflineRequestContext(AtmosphereResource resource) {
-		HttpSession session = resource.getRequest().getSession(false);
+		HttpServletRequest request = resource.getRequest();
+		HttpSession session = request.getSession(false);
 		DefaultOfflineRequestContext requestContext = new DefaultOfflineRequestContext();
+		requestContext.setCookies(request.getCookies());
 		requestContext.setXHR(true);
 		if (session != null) {
 			Map<String, Object> sessionMap = new HashMap<String, Object>();
