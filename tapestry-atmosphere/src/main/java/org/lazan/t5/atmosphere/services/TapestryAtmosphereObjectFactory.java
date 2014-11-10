@@ -23,7 +23,7 @@ public class TapestryAtmosphereObjectFactory implements AtmosphereObjectFactory 
 	private final Set<Class<?>> registryMisses = Collections.newSetFromMap(new ConcurrentHashMap<Class<?>, Boolean>());
 
 	@Override
-	public <T> T newClassInstance(AtmosphereFramework framework, Class<T> type) throws InstantiationException,
+	public <T, U extends T> T newClassInstance(AtmosphereFramework framework, Class<T> type, Class<U> defaultType) throws InstantiationException,
 			IllegalAccessException
 	{
 		if (!registryMisses.contains(type)) {
@@ -41,7 +41,7 @@ public class TapestryAtmosphereObjectFactory implements AtmosphereObjectFactory 
 		}
 		// fallback to default
 		logger.debug("Falling back to default lookup for {}", type.getSimpleName());
-		return FALLBACK_OBJECT_FACTORY.newClassInstance(framework, type);
+		return FALLBACK_OBJECT_FACTORY.newClassInstance(framework, type, defaultType);
 	}
 	
 	protected Registry getRegistry(AtmosphereFramework framework) {
@@ -51,5 +51,5 @@ public class TapestryAtmosphereObjectFactory implements AtmosphereObjectFactory 
 			throw new IllegalStateException("Tapestry registry not found in ServletContext");
 		}
 		return registry;
-	}	
+	}
 }

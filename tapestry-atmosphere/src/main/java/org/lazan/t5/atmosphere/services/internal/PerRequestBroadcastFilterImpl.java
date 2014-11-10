@@ -42,13 +42,13 @@ public class PerRequestBroadcastFilterImpl implements PerRequestBroadcastFilter 
 	}
 
 	@Override
-	public BroadcastAction filter(AtmosphereResource resource, Object originalMessage, Object oMessage) {
+	public BroadcastAction filter(String broadcasterId, AtmosphereResource resource, Object originalMessage, Object oMessage) {
 		TopicMessage tMessage = (TopicMessage) oMessage;
-		
+
 		ContainerClientModel containerModel = atmosphereManager.getContainerClientModel(resource);
 		EventContext eventContext = new ArrayEventContext(typeCoercer, tMessage.getMessage());
 		Collection<PushTargetClientModel> pushTargets = containerModel.getPushTargetsForTopic(tMessage.getTopic());
-		
+
 		JSONObject allResults = new JSONObject();
 		OfflineRequestContext requestContext = createOfflineRequestContext(resource);
 		for (PushTargetClientModel pushTarget : pushTargets) {
@@ -61,7 +61,7 @@ public class PerRequestBroadcastFilterImpl implements PerRequestBroadcastFilter 
 				logger.error("Error rendering " + params, e);
 			}
 		}
-		
+
 		return new BroadcastAction(allResults.toCompactString());
 	}
 
@@ -98,9 +98,9 @@ public class PerRequestBroadcastFilterImpl implements PerRequestBroadcastFilter 
 		}
 		return requestContext;
 	}
-	
+
 	@Override
-	public BroadcastAction filter(Object originalMessage, Object message) {
+	public BroadcastAction filter(String broadcasterId, Object originalMessage, Object message) {
 		return new BroadcastAction(message);
 	}
 }

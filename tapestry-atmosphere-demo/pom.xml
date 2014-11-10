@@ -44,8 +44,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<optimize>true</optimize>
 				</configuration>
 			</plugin>
@@ -54,7 +54,7 @@
 
 	<properties>
 		<servlet.version>2.5</servlet.version>
-		<atmosphere.version>2.1.0-RC2</atmosphere.version>
+		<atmosphere.version>2.2.3</atmosphere.version>
 		<atmosphere-compat.version>2.0.1</atmosphere-compat.version>
 	</properties>
 

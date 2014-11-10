@@ -60,8 +60,11 @@ public class AtmosphereHandlerImpl implements AtmosphereHandler {
 		AtmosphereResource resource = event.getResource();
 		AtmosphereResponse response = resource.getResponse();
 		if (resource.isSuspended()) {
-			String message = event.getMessage().toString();
-			response.getWriter().write(message);
+			//by closed/cancelled events event.getMessage() is null
+			if (!event.isClosedByClient() && !event.isClosedByApplication() && !event.isCancelled()){
+				String message = event.getMessage().toString();
+				response.getWriter().write(message);
+			}
 			switch (resource.transport()) {
 			case JSONP:
 			case LONG_POLLING:
