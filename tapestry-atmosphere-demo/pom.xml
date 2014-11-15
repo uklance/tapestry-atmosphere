@@ -25,6 +25,12 @@
 			<version>0.0.1</version>
 		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>uklance-releases</id>
+			<url>https://raw.github.com/uklance/releases/master</url>
+		</repository>
+	</repositories>
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<resources>

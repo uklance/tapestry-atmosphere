@@ -37,6 +37,12 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>uklance-releases</id>
+			<url>https://raw.github.com/uklance/releases/master</url>
+		</repository>
+	</repositories>
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
