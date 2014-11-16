@@ -8,10 +8,9 @@ import java.util.Set;
 
 import org.apache.tapestry5.EventContext;
 import org.apache.tapestry5.internal.EmptyEventContext;
-import org.apache.tapestry5.internal.services.ArrayEventContext;
-import org.apache.tapestry5.ioc.services.TypeCoercer;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
+import org.apache.tapestry5.services.ValueEncoderSource;
 import org.atmosphere.cpr.AtmosphereResource;
 import org.atmosphere.cpr.Broadcaster;
 import org.atmosphere.cpr.BroadcasterFactory;
@@ -30,16 +29,18 @@ public class AtmosphereManagerImpl implements AtmosphereManager {
 	private static final String ATTRIBUTE_CONTAINER_CLIENT_MODEL = AtmosphereManager.class.getName() + ".ContainerClientModel";
 	
 	private final BroadcasterFactory broadcasterFactory;
-	private final TypeCoercer typeCoercer;
+	private final ValueEncoderSource valueEncoderSource;
 	private final AtmosphereSessionManager sessionManager;
 	private final TopicAuthorizer topicAuthorizer;
 	private final TopicListener topicListener;
 	
-	public AtmosphereManagerImpl(BroadcasterFactory broadcasterFactory, TypeCoercer typeCoercer,
-			AtmosphereSessionManager sessionManager, TopicAuthorizer topicAuthorizer, TopicListener topicListener) {
+	public AtmosphereManagerImpl(BroadcasterFactory broadcasterFactory,
+			ValueEncoderSource valueEncoderSource,
+			AtmosphereSessionManager sessionManager,
+			TopicAuthorizer topicAuthorizer, TopicListener topicListener) {
 		super();
 		this.broadcasterFactory = broadcasterFactory;
-		this.typeCoercer = typeCoercer;
+		this.valueEncoderSource = valueEncoderSource;
 		this.sessionManager = sessionManager;
 		this.topicAuthorizer = topicAuthorizer;
 		this.topicListener = topicListener;
@@ -125,10 +126,10 @@ public class AtmosphereManagerImpl implements AtmosphereManager {
 		if (jsonArray == null || jsonArray.length() == 0) {
 			return EMPTY_EVENT_CONTEXT;
 		}
-		Object[] array = new String[jsonArray.length()];
+		String[] array = new String[jsonArray.length()];
 		for (int i = 0; i < jsonArray.length(); ++i) {
 			array[i] = jsonArray.getString(i);
 		}
-		return new ArrayEventContext(typeCoercer, array);
+		return new StringEventContext(valueEncoderSource, array);
 	}
 }
