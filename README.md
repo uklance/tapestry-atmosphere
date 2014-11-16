@@ -6,7 +6,7 @@ Asynchronous WebSocket/Comet Support in [Tapestry](http://tapestry.apache.org) u
 The aim of this project is to support push applications in Apache Tapestry without requiring developers
 to write a single line of javascript or concern themselves with the underlying Atmosphere implementation.
 
-See a live demo running [here](http://tapestry-atmosphere.uklance.cloudbees.net)
+See a live demo running [here](http://t5atmosphere-lazan.rhcloud.com)
 
 ### Wiki Topics
 
