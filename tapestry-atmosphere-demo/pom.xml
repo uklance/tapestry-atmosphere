@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.lazan</groupId>
 	<artifactId>tapestry-atmosphere-demo</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.6-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>${project.artifactId}</name>
 	<dependencies>
