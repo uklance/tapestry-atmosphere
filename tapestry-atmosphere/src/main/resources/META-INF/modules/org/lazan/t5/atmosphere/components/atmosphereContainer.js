@@ -1,5 +1,5 @@
-T5.extendInitializers({
-	atmosphereContainer: function(options) {
+define(["atmosphere"], function(atmosphere){
+	return function(options) {
 		var pushTargets = options.pushTargets;
 		var pushTargetsById = {};
 		var subsocket;
@@ -19,13 +19,13 @@ T5.extendInitializers({
 				activePageName: options.activePageName,
 				containingPageName: options.containingPageName,
 			};
-			subsocket.push(Object.toJSON(data));
+			subsocket.push(atmosphere.util.stringifyJSON(data));
 		};		
 
 		request.onMessage = function (response) {
 			var messageJson = response.responseBody;
 			// prototype specific
-			var message = messageJson.evalJSON();
+			var message = atmosphere.util.parseJSON(messageJson);
 			
 			for (var clientId in message) {
 				var singleResponse = message[clientId];

@@ -7,7 +7,6 @@ import java.util.Set;
 import org.apache.tapestry5.BindingConstants;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.EventContext;
-import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
@@ -22,7 +21,6 @@ import org.lazan.t5.atmosphere.model.ContainerModel;
 import org.lazan.t5.atmosphere.model.PushTargetModel;
 import org.lazan.t5.atmosphere.services.PageGlobals;
 
-@Import(library = { "atmosphere.js", "tapestry-atmosphere.js" })
 public class Container {
 	@Parameter(name="options")
 	private JSONObject options;
@@ -77,7 +75,7 @@ public class Container {
 	void afterRenderBody() {
 		if (!pushTargets.isEmpty()) {
 			JSONObject config = createConfig();
-			javascriptSupport.addInitializerCall("atmosphereContainer", config);
+			javascriptSupport.require("org/lazan/t5/atmosphere/components/atmosphereContainer").with(config);
 			environment.pop(ContainerModel.class);
 		}
 	}
