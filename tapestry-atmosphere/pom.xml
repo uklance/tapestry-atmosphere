@@ -97,7 +97,7 @@
 	</build>
 
 	<properties>
-		<tapestry.version>5.3.7</tapestry.version>
+		<tapestry.version>5.4.0</tapestry.version>
 		<servlet.version>2.5</servlet.version>
 	</properties>
 </project>
