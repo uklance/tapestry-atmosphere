@@ -1,16 +1,15 @@
 package org.lazan.t5.atmosphere.demo.services;
 
-import org.apache.tapestry5.ComponentParameterConstants;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.ioc.annotations.SubModule;
+import org.apache.tapestry5.ioc.annotations.ImportModule;
 import org.lazan.t5.atmosphere.services.AtmosphereModule;
 import org.lazan.t5.atmosphere.services.TopicAuthorizer;
 import org.lazan.t5.atmosphere.services.TopicListener;
 
-@SubModule(AtmosphereModule.class)
+@ImportModule(AtmosphereModule.class)
 public class AppModule {
 	public static void bind(ServiceBinder binder) {
 		binder.bind(ChatManager.class, ChatManagerImpl.class);
@@ -23,7 +22,6 @@ public class AppModule {
 	public static void contributeApplicationDefaults(MappedConfiguration<String, Object> config) {
 		config.add(SymbolConstants.PRODUCTION_MODE, "false");
 		config.add(SymbolConstants.SUPPORTED_LOCALES, "en");
-		config.add(ComponentParameterConstants.ZONE_UPDATE_METHOD, "show");
 		config.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
 	}
 
