@@ -1,4 +1,4 @@
-define(["atmosphere"], function(atmosphere){
+define(["atmosphere", "t5/core/pageinit"], function(atmosphere, pageInit){
 	return function(options) {
 		var pushTargets = options.pushTargets;
 		var pushTargetsById = {};
@@ -23,26 +23,31 @@ define(["atmosphere"], function(atmosphere){
 		};		
 
 		request.onMessage = function (response) {
+
 			var messageJson = response.responseBody;
-			// prototype specific
-			var message = atmosphere.util.parseJSON(messageJson);
-			
-			for (var clientId in message) {
-				var singleResponse = message[clientId];
-				var content = singleResponse.content;
-				var pushTarget = pushTargetsById[clientId];
-				
-				var element = document.getElementById(clientId);
-				if (pushTarget.update == 'PREPEND') {
-					var html = content + element.innerHTML;
-					element.innerHTML = html;
-				} else if (pushTarget.update == 'APPEND') {
-					var html = element.innerHTML + content;
-					element.innerHTML = html;
-				} else {
-					element.innerHTML = content;
+			pageInit.handlePartialPageRenderResponse({json: atmosphere.util.parseJSON(messageJson)}, function(response){
+				var message = response.json;
+				for (var clientId in message) {
+					var singleResponse = message[clientId];
+					var content = singleResponse.content;
+					var pushTarget = pushTargetsById[clientId];
+
+					var element = document.getElementById(clientId);
+					if (pushTarget.update == 'PREPEND') {
+						var html = content + element.innerHTML;
+						element.innerHTML = html;
+					} else if (pushTarget.update == 'APPEND') {
+						var html = element.innerHTML + content;
+						element.innerHTML = html;
+					} else {
+						element.innerHTML = content;
+					}
 				}
-			}
+
+			});
+
+
+
 		};
 
 		subsocket = atmosphere.subscribe(request);
