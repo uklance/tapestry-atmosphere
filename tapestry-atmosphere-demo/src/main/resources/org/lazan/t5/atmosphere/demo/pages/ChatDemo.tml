@@ -95,6 +95,6 @@
 		<t:stitch.codeTab source="classpath:org/lazan/t5/atmosphere/demo/services/ChatTopicListener.java" />
 		<t:stitch.codeTab source="classpath:org/lazan/t5/atmosphere/demo/services/ChatHttpSessionListener.java" />
 		<t:stitch.codeTab source="classpath:org/lazan/t5/atmosphere/demo/services/AppModule.java" />
-		<t:stitch.codeTab source="classpath:WEB-INF/web.xml" />
+		<t:stitch.codeTab source="prop:webXMLContent" />
 	</t:stitch.tabGroup>
 </t:layout>

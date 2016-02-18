@@ -1,5 +1,7 @@
 package org.lazan.t5.atmosphere.demo.pages;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -9,12 +11,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.apache.tapestry5.Asset;
+import org.apache.tapestry5.Asset2;
 import org.apache.tapestry5.Block;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.PageActivationContext;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionAttribute;
 import org.apache.tapestry5.corelib.components.Zone;
+import org.apache.tapestry5.internal.util.VirtualResource;
+import org.apache.tapestry5.ioc.Resource;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.lazan.t5.atmosphere.demo.model.ChatMessage;
 import org.lazan.t5.atmosphere.demo.services.ChatConstants;
@@ -136,5 +142,37 @@ public class ChatDemo {
 			hex = "0" + hex;
 		}
 		return "#" + hex;
+	}
+
+	public Asset getWebXMLContent() {
+	return new Asset2() {
+
+			@Override
+			public String toClientURL() {
+				return null;
+			}
+			
+			@Override
+			public Resource getResource() {
+				return new VirtualResource() {
+				
+					@Override
+					public InputStream openStream() throws IOException {
+						return this.getClass().getResourceAsStream("/WEB-INF/web.xml");
+					}
+				
+					@Override
+					public String getFile() {
+						return "web.xml";
+					}
+				};
+			}
+		
+			@Override
+			public boolean isInvariant() {
+				return true;
+			}
+		};
+		
 	}
 }
