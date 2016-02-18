@@ -1,4 +1,4 @@
-define(["atmosphere", "t5/core/pageinit"], function(atmosphere, pageInit){
+define(["atmosphere", "t5/core/pageinit", "t5/core/dom"], function(atmosphere, pageInit, dom){
 	return function(options) {
 		var pushTargets = options.pushTargets;
 		var pushTargetsById = {};
@@ -32,15 +32,13 @@ define(["atmosphere", "t5/core/pageinit"], function(atmosphere, pageInit){
 					var content = singleResponse.content;
 					var pushTarget = pushTargetsById[clientId];
 
-					var element = document.getElementById(clientId);
+					var element = dom(clientId);
 					if (pushTarget.update == 'PREPEND') {
-						var html = content + element.innerHTML;
-						element.innerHTML = html;
+					    element.prepend(content);
 					} else if (pushTarget.update == 'APPEND') {
-						var html = element.innerHTML + content;
-						element.innerHTML = html;
+					    element.append(content);
 					} else {
-						element.innerHTML = content;
+					    element.update(content);
 					}
 				}
 
