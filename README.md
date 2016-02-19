@@ -67,4 +67,6 @@ eg:
 </web-app>
 ```
 
+### Version History
 
+**0.0.6** Upggrade to tapestry 5.4 and Atmosphere 2.4.2. A big thanks to [jochenberger](https://github.com/jochenberger) for his [pull request](https://github.com/uklance/tapestry-atmosphere/pull/29)
