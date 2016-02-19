@@ -1,7 +1,5 @@
 package org.lazan.t5.atmosphere.demo.pages;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -12,16 +10,15 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.tapestry5.Asset;
-import org.apache.tapestry5.Asset2;
 import org.apache.tapestry5.Block;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.PageActivationContext;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SessionAttribute;
 import org.apache.tapestry5.corelib.components.Zone;
-import org.apache.tapestry5.internal.util.VirtualResource;
 import org.apache.tapestry5.ioc.Resource;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.internal.util.ClasspathResource;
 import org.lazan.t5.atmosphere.demo.model.ChatMessage;
 import org.lazan.t5.atmosphere.demo.services.ChatConstants;
 import org.lazan.t5.atmosphere.demo.services.ChatManager;
@@ -145,8 +142,7 @@ public class ChatDemo {
 	}
 
 	public Asset getWebXMLContent() {
-	return new Asset2() {
-
+		return new Asset() {
 			@Override
 			public String toClientURL() {
 				return null;
@@ -154,25 +150,8 @@ public class ChatDemo {
 			
 			@Override
 			public Resource getResource() {
-				return new VirtualResource() {
-				
-					@Override
-					public InputStream openStream() throws IOException {
-						return this.getClass().getResourceAsStream("/WEB-INF/web.xml");
-					}
-				
-					@Override
-					public String getFile() {
-						return "web.xml";
-					}
-				};
-			}
-		
-			@Override
-			public boolean isInvariant() {
-				return true;
+				return new ClasspathResource("/WEB-INF/web.xml");
 			}
 		};
-		
 	}
 }
