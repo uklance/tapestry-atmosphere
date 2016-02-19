@@ -8,6 +8,7 @@ import javax.servlet.ServletContext;
 
 import org.apache.tapestry5.TapestryFilter;
 import org.apache.tapestry5.ioc.Registry;
+import org.atmosphere.cpr.AtmosphereConfig;
 import org.atmosphere.cpr.AtmosphereFramework;
 import org.atmosphere.cpr.AtmosphereFramework.DefaultAtmosphereObjectFactory;
 import org.atmosphere.cpr.AtmosphereObjectFactory;
@@ -17,34 +18,34 @@ import org.slf4j.LoggerFactory;
 /**
  * Note: This is not a tapestry managed service. It is instantiated by Atmosphere
  */
-public class TapestryAtmosphereObjectFactory implements AtmosphereObjectFactory {
-	private static final AtmosphereObjectFactory FALLBACK_OBJECT_FACTORY = new DefaultAtmosphereObjectFactory();
+public class TapestryAtmosphereObjectFactory implements AtmosphereObjectFactory<Object> {
+	private static final AtmosphereObjectFactory<Object> FALLBACK_OBJECT_FACTORY = new DefaultAtmosphereObjectFactory();
 	private static final Logger logger = LoggerFactory.getLogger(TapestryAtmosphereObjectFactory.class);
 	private final Set<Class<?>> registryMisses = Collections.newSetFromMap(new ConcurrentHashMap<Class<?>, Boolean>());
+	private AtmosphereFramework framework;
 
 	@Override
-	public <T, U extends T> T newClassInstance(AtmosphereFramework framework, Class<T> type, Class<U> defaultType) throws InstantiationException,
-			IllegalAccessException
+	public <T, U extends T> T newClassInstance(Class<T> classType, Class<U> defaultType) throws InstantiationException, IllegalAccessException
 	{
-		if (!registryMisses.contains(type)) {
-			Registry registry = getRegistry(framework);
+		if (!registryMisses.contains(classType)) {
+			Registry registry = getRegistry();
 		
 			try {
 				// attempt service lookup
-				T service = registry.getService(type);
-				logger.debug("Found {} in tapestry registry", type.getSimpleName());
+				T service = registry.getService(classType);
+				logger.debug("Found {} in tapestry registry", classType.getSimpleName());
 				return service;
 			} catch (RuntimeException e) {
 				// never try this type again
-				registryMisses.add(type);
+				registryMisses.add(classType);
 			}
 		}
 		// fallback to default
-		logger.debug("Falling back to default lookup for {}", type.getSimpleName());
-		return FALLBACK_OBJECT_FACTORY.newClassInstance(framework, type, defaultType);
+		logger.debug("Falling back to default lookup for {}", classType.getSimpleName());
+		return FALLBACK_OBJECT_FACTORY.newClassInstance(classType, defaultType);
 	}
 	
-	protected Registry getRegistry(AtmosphereFramework framework) {
+	protected Registry getRegistry() {
 		ServletContext servletContext = framework.getServletContext();
 		Registry registry = (Registry) servletContext.getAttribute(TapestryFilter.REGISTRY_CONTEXT_NAME);
 		if (registry == null) {
@@ -52,4 +53,15 @@ public class TapestryAtmosphereObjectFactory implements AtmosphereObjectFactory 
 		}
 		return registry;
 	}
+
+	@Override
+	public void configure(AtmosphereConfig config) {
+		this.framework = config.framework();
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public AtmosphereObjectFactory allowInjectionOf(Object z) {
+		return this;
+  }
 }

@@ -30,7 +30,7 @@ public class AtmosphereHttpServletRequestFilter implements HttpServletRequestFil
 		}
 
 		public AtmosphereFramework getAtmosphereFramework() {
-			return this.framework;
+			return this.framework();
 		}
 	}
 

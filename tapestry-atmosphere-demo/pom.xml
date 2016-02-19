@@ -60,7 +60,7 @@
 
 	<properties>
 		<servlet.version>2.5</servlet.version>
-		<atmosphere.version>2.2.9</atmosphere.version>
+		<atmosphere.version>2.4.2</atmosphere.version>
 		<atmosphere-compat.version>2.0.1</atmosphere-compat.version>
 	</properties>
 
